@@ -1,0 +1,100 @@
+#!/usr/bin/env ruby --disable-gems -w -Ilib -I../rubygems/lib -rrubygems
+
+# A simple little command-line tool for exercising this experimental
+# stuff. Probably only works with MRI 1.9.2. Only works from the root
+# project dir as `bin/jim`. Only works with a RubyGems master checkout
+# next to this one.
+
+require "optparse"
+require "rubygems/cli"
+require "rubygems/exceptions"
+require "rubygems/repo"
+require "rubygems/runtime"
+require "rubygems/source"
+
+bin = $0.split(File::SEPARATOR).last
+
+# Commands are classes nested under Gem::CLI. They inherit from
+# Gem::CLI::Command. To allow for superclasses, only active command
+# classes are used.
+
+klasses = Gem::CLI.constants.map { |c| Gem::CLI.const_get c }.
+  select { |c| c < Gem::CLI::Command && c.active? }
+
+OptionParser.new do |o|
+  o.banner = "Usage: #{bin} command [arguments] [options]\n\n"
+
+  o.on "--help", "-h", "-?", "Show relevant help." do
+    puts o
+    exit
+  end
+
+  # Figure out what command we're trying to run here. We haven't
+  # parsed yet, so ignore options in the first position.
+
+  verb  = /^-/ !~ ARGV.first && ARGV.shift
+  klass = klasses.detect { |c| c.verbs.include? verb }
+
+  # If we can't find a command, be useful and show a list of all the
+  # available ones.
+
+  unless klass
+    warn "Unknown command: #{verb}" if verb
+
+    pad = klasses.map { |c| c.syntax.size }.max
+
+    klasses.each do |c|
+      o.banner << "    %-#{pad}s  # %s\n" % [c.syntax, c.description]
+    end
+
+    o.banner << "\n"
+    abort o.to_s
+  end
+
+  # We have a command! Adjust the help banner to be specific.
+
+  o.banner = "Usage: #{bin} #{klass.syntax} [options]\n\n" +
+    "    #{klass.description}\n\n" # FIX: wrap
+
+  # Create the command instance and allow it to add more options.
+
+  cmd = klass.new o
+
+  # Be nice if parsing fails, too many people just let the exception
+  # propagage. That's lame.
+
+  begin
+    o.parse! ARGV
+  rescue OptionParser::MissingArgument, OptionParser::InvalidOption => e
+    abort "#{e.message}\n#{o}"
+  end
+
+  begin
+    # Create a new instance of the command class and the runtime it's
+    # going to run against.
+
+    rt = Gem::Runtime.new Gem::Repo.new(cmd.home, cmd.paths)
+
+    # If there were sources specified on the command line, use them in
+    # favor of whatever default sources the runtime might contain.
+
+    unless cmd.sources.empty?
+      rt.sources.replace cmd.sources.map { |s| Gem::Source.for s }
+    end
+
+    # You want quiet? I'll give you quiet.
+
+    if cmd.quiet?
+      require "stringio"
+      $stdout = StringIO.new
+    end
+
+    # Let's do this.
+
+    cmd.run rt, ARGV
+  rescue Gem::Exception => e
+    msg = e.message
+    msg << " (#{e.class})\n#{e.backtrace.join ?\n}" if cmd.verbose?
+    abort msg
+  end
+end
