@@ -6,15 +6,19 @@ require "uri"
 
 module Gem
 
-  # This module represents the interface for anything that can act as
-  # a source. Sources are searchable collections of gems that can
-  # provide an installable representation of a gem when requested.
+  # A protocol included by anything that can act as a source. Sources
+  # are searchable collections of gems, able to provide an installable
+  # representation of a gem when requested.
   #
-  # The API is reasonably minimal, and the only methods that must be
-  # implemented on the including class are +specs+ and +pull+. You'll
-  # probably want to do more than that for efficiency, though.
+  # The only methods that must be implemented on the including class
+  # are +specs+ and +pull+. You'll probably want to do more than that
+  # for efficiency, though.
 
   module Source
+
+    # Searches constants under the <tt>Gem::Source</tt> module for a
+    # class that is willing to handle +url+. If a handler class is
+    # found, a new instance of it is returned.
 
     def self.for url
       url = URI.parse(url) unless URI === url
