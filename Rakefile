@@ -4,7 +4,7 @@ task :default => :test
 
 desc "Run the tests."
 task :test do
-  tests = Dir["test/test_*.rb"]
+  tests = ENV["ONLY"] ? [ENV["ONLY"]] : Dir["test/test_*.rb"]
   flags = %w(-w -Ilib:. -I../rubygems/lib)
 
   flags.unshift "--disable-gems" if RUBY_VERSION > "1.9"
