@@ -99,12 +99,11 @@ module Gem
       spec = specs.search(name, "= #{version}").first
       raise ::LoadError, "Can't find #{name}-#{version}." unless spec
 
-      file = gemfiles.detect do |f|
-        "#{name}-#{version}"  == File.basename(f, ".gem")
+      unless File.file? spec.loaded_from
+        raise ::LoadError, "Missing Gem file [#{file}."
       end
 
-      raise ::LoadError, "Missing Gem file [#{file}." unless file
-      Gem::Installable.new spec, file
+      Gem::Installable.new spec
     end
 
     # Force this repo to reload any cached data or assumptions.
