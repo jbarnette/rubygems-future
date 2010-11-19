@@ -11,7 +11,7 @@ module Gem
   class Info
 
     # Other gems this gem depends on. An <tt>Array</tt> of
-    # <tt>Gem::Specification</tt>s.
+    # <tt>Gem::Dependency</tt> entries.
 
     attr_reader :dependencies
 
