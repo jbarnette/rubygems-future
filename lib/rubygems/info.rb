@@ -5,7 +5,7 @@ require "rubygems/version"
 module Gem
 
   # A tasty bite of gem metadata. A Info contains the bare minimum of
-  # useful information about a gem. It's not intended to be used as a
+  # useful information about a gem. It's intended to be used as a
   # lightweight data object when Gem::Specification is too unwieldy.
 
   class Info
