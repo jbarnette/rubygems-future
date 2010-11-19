@@ -95,6 +95,30 @@ class TestGemRepo < Gem::Future::Test
     end
   end
 
+  def test_bindir
+    repo do |r|
+      assert_equal File.join(r.home, "bin"), r.bindir
+    end
+  end
+
+  def test_cachedir
+    repo do |r|
+      assert_equal File.join(r.home, "cache"), r.cachedir
+    end
+  end
+
+  def test_docdir
+    repo do |r|
+      assert_equal File.join(r.home, "doc"), r.docdir
+    end
+  end
+
+  def test_gemdir
+    repo do |r|
+      assert_equal File.join(r.home, "gems"), r.gemdir
+    end
+  end
+
   def test_infos
     repo do |r|
       gem "foo"
@@ -189,6 +213,12 @@ class TestGemRepo < Gem::Future::Test
 
         assert r.activated?("bar")
       end
+    end
+  end
+
+  def test_specdir
+    repo do |r|
+      assert_equal File.join(r.home, "specifications"), r.specdir
     end
   end
 

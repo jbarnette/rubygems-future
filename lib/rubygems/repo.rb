@@ -30,6 +30,7 @@ module Gem
     # Where does this repo live?
 
     attr_reader :home
+
     # Represents the current environment's load path. Usually wraps
     # $LOAD_PATH.
 
@@ -74,7 +75,7 @@ module Gem
         activated << spec
 
         requires = spec.require_paths.map do |rp|
-          File.join home, "gems", spec.full_name, rp
+          File.join gemdir, spec.full_name, rp
         end
 
         load_path.add(*requires)
@@ -92,6 +93,30 @@ module Gem
 
     def available? name, *requirements
       !infos.search(name, *requirements).empty?
+    end
+
+    # This directory contains executables for gems in this repo.
+
+    def bindir
+      @bindir ||= File.join home, "bin"
+    end
+
+    # This directory contains cached .gem files for gems in this repo.
+
+    def cachedir
+      @cachedir ||= File.join home, "cache"
+    end
+
+    # This directory contains documentation for gems in this repo.
+
+    def docdir
+      @docdir ||= File.join home, "doc"
+    end
+
+    # This directory contains unpacked versions of the gems in this repo.
+
+    def gemdir
+      @gemdir ||= File.join home, "gems"
     end
 
     # To comply with Gem::Source.
@@ -118,6 +143,13 @@ module Gem
       spec = globber.spec feature
       activate spec.name, spec.version if spec
       gem_original_require feature
+    end
+
+    # This directory contains Ruby gemspec files for each gem in this
+    # repo.
+
+    def specdir
+      @specdir ||= File.join home, "specifications"
     end
 
     # Return a collection of Gem::Specification\s. See Gem::Collection
