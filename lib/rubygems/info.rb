@@ -4,9 +4,9 @@ require "rubygems/version"
 
 module Gem
 
-  # A tasty bite of gem metadata. A Info contains the bare minimum of
-  # useful information about a gem. It's intended to be used as a
-  # lightweight data object when Gem::Specification is too unwieldy.
+  # A tasty bite of gem metadata. Contains the bare minimum of useful
+  # information about a gem. It's intended to be used as a lightweight
+  # data object when Gem::Specification is too unwieldy.
 
   class Info
 
@@ -19,11 +19,12 @@ module Gem
 
     attr_reader :name
 
-    # This gem's platform as a <tt>String</tt>.
+    # This gem's platform as a <tt>String</tt>. Default is
+    # <tt>"ruby"</tt>.
 
     attr_reader :platform
 
-    # Where this gem originated (or should be pulled from).
+    # The Gem::Source that's responsible for this gem. May be +nil+.
 
     attr_reader :source
 
@@ -35,6 +36,9 @@ module Gem
     # Gem::Info. Allows +source+ to be overridden.
 
     def self.for other, source = nil
+      return unless other
+      source ||= other.source
+
       new other.name, other.version, other.platform, source do |m|
         m.dependencies.replace other.dependencies.dup
       end
@@ -53,13 +57,20 @@ module Gem
       yield self if block_given?
     end
 
-    # :nodoc:
+    # A string suitable for pretty display. Includes name, version,
+    # and platform (if not ruby).
+
+    def display
+      @display ||= (d = "#{name}-#{version}"
+                    d << "-#{platform}" unless "ruby" == platform
+                    d)
+    end
+
+    # :stopdoc:
 
     def hash
       name.hash ^ version.hash ^ platform.hash ^ dependencies.hash
     end
-
-    # :nodoc:
 
     def marshal_dump
       deps = dependencies.map do |d|
@@ -74,8 +85,6 @@ module Gem
       }
     end
 
-    # :nodoc:
-
     def marshal_load hash
       initialize hash[:name], hash[:version], hash[:platform] do |m|
         hash[:dependencies].each do |arr|
@@ -84,13 +93,8 @@ module Gem
       end
     end
 
-    # :stopdoc:
-
     def to_s
-      full  = "#{name}-#{version}"
-      full << "-#{platform}" unless "ruby" == platform
-
-      "#<#{self.class.name}: #{full}>"
+      "#<#{self.class.name}: #{display}>"
     end
 
     def sorter

@@ -18,6 +18,13 @@ class TestGemInfo < Gem::Future::Test
     assert a.eql?(b)
   end
 
+  def test_display
+    assert_equal "foo-1.0.0", Gem::Info.new("foo", "1.0.0").display
+
+    assert_equal "foo-1.0.0-jruby",
+      Gem::Info.new("foo", "1.0.0", "jruby").display
+  end
+
   def test_equality_unsorted_dependencies
     bar = Gem::Dependency.new "bar", "1.0.0"
     baz = Gem::Dependency.new "baz", "1.0.0"
@@ -126,6 +133,12 @@ class TestGemInfo < Gem::Future::Test
     assert_equal(-1, (a <=> b))
     assert_equal  0, (a <=> a)
     assert_equal  1, (b <=> a)
+  end
+
+  def test_to_s
+    a = Gem::Info.new "foo", "1.0.0"
+    assert_match(/Gem::Info/, a.to_s)
+    assert_match(a.display, a.to_s)
   end
 
   def test_version
