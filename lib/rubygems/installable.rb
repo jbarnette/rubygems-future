@@ -2,6 +2,11 @@ require "rubygems/installer"
 
 module Gem
   class Installable
+
+    # The Gem::Specification this instance knows how to install.
+
+    attr_reader :spec
+
     def initialize spec
       @spec = spec
     end
