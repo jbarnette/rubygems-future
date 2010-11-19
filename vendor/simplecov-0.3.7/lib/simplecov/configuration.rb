@@ -24,7 +24,7 @@ module SimpleCov::Configuration
   # Configure with SimpleCov.coverage_dir('cov')
   #
   def coverage_dir(dir=nil)
-    return @coverage_dir if @coverage_dir and dir.nil?
+    return @coverage_dir if defined?(@coverage_dir) and dir.nil?
     @coverage_dir = (dir || 'coverage')
   end
   
@@ -124,7 +124,7 @@ module SimpleCov::Configuration
   # the SimpleCov.root is this.
   #
   def project_name(new_name=nil)
-    return @project_name if @project_name and new_name.nil?
+    return @project_name if defined?(@project_name) and new_name.nil?
     @project_name = new_name if new_name.kind_of?(String)
     @project_name ||= File.basename(root.split('/').last).capitalize.gsub('_', ' ')
   end
@@ -135,7 +135,7 @@ module SimpleCov::Configuration
   #
   def use_merging(use=nil)
     @use_merging = use unless use.nil? # Set if param given
-    @use_merging = true if @use_merging != false
+    @use_merging = true if defined?(@use_merging) && @use_merging != false
   end
   
   #

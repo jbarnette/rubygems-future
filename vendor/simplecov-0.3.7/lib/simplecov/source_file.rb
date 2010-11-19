@@ -59,7 +59,7 @@ module SimpleCov
     # Returns all source lines for this file as instances of SimpleCov::SourceFile::Line,
     # and thus including coverage data. Aliased as :source_lines
     def lines
-      return @lines unless @lines.nil?
+      return @lines if defined?(@lines)
       # Initialize lines
       @lines = []
       coverage.each_with_index do |coverage, i|
