@@ -1,6 +1,18 @@
 Dir["vendor/*/lib"].each { |lib| $: << File.expand_path(lib) }
 $:.push File.expand_path("../rubygems/lib")
 
+if ENV["COVERAGE"]
+  module Gem; end
+
+  require "rubygems/version"
+  require "simplecov"
+
+  SimpleCov.start do
+    add_filter "/test/"
+    add_filter "/vendor/"
+  end
+end
+
 require "rubygems" # fake
 
 require "fileutils"

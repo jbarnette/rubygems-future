@@ -1,0 +1,37 @@
+<div class="file_list_container" id="<%= title.gsub(/[^a-zA-Z]/, '') %>">
+  <h2>
+    <%= title %>
+    (<span class="<%= coverage_css_class(coverage(source_files)) %>"><%= coverage(source_files).round(2) %>%</span>)
+  </h2>
+  <a name="<%= title.gsub(/[^a-zA-Z]/, '') %>"></a>
+  <div>
+    <b><%= source_files.length %></b> files in total.
+    <b><%= lines_of_code(source_files) %></b> relevant lines. 
+    <span class="green"><b><%= lines_covered(source_files) %></b> lines covered</span> and
+    <span class="red"><b><%= lines_missed(source_files) %></b> lines missed </span>
+  </div>
+  <table class="file_list">
+    <thead>
+      <tr>
+        <th>File</th>
+        <th>% covered</th>
+        <th>Lines</th>
+        <th>Relevant Lines</th>
+        <th>Lines covered</th>
+        <th>Lines missed</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% source_files.each do |source_file| %>
+      <tr>
+        <td><%= link_to_source_file(source_file) %></td>
+        <td class="<%= coverage_css_class(source_file.covered_percent) %>"><%= source_file.covered_percent.round(2).to_s %> %</td>
+        <td><%= source_file.lines.count %></td>
+        <td><%= source_file.covered_lines.count + source_file.missed_lines.count %></td>
+        <td><%= source_file.covered_lines.count %></td>
+        <td><%= source_file.missed_lines.count %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
