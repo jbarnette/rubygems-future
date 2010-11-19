@@ -1,39 +1,25 @@
-require "rubygems/installer"
+require "rubygems/installable/file"
 
 module Gem
-  class Installable
+
+  # A protocol representing the ability to install a gem into a
+  # <tt>Gem::Repo</tt>. The method of installation is intentionally
+  # opaque: <tt>Gem::Installable::File</tt> unpacks a <tt>.gem</tt>
+  # file into the repo, but other sources may just symlink an existing
+  # directory, update and change refs in an SCM, etc.
+
+  module Installable
 
     # The Gem::Specification this instance knows how to install.
 
-    attr_reader :spec
-
-    def initialize spec
-      @spec = spec
+    def spec
+      raise "#{self.class.name} needs to implement spec."
     end
 
-    # One could subclass and override this to, say, create and update
-    # symlinks to a Git repo or something. FIX: Extract and refactor
-    # Gem::Installer instead of using it.
+    # Install the gem into +repo+.
 
     def install repo
-      unless String === from && File.file?(from) && /\.gem$/i =~ from
-        raise "The default impl. only knows how to deal with .gem files."
-      end
-
-      fake = Object.new
-      def fake.method_missing *; end
-
-      options = {
-        :bin_dir             => File.join(repo.home, "bin"),
-        :env_shebang         => false,
-        :force               => false,
-        :ignore_dependencies => true,
-        :install_dir         => repo.home,
-        :source_index        => fake,
-      }
-
-      Gem::Installer.new(spec.loaded_from, options).install
-      repo.reset
+      raise "#{self.class.name} needs to implement install."
     end
   end
 end

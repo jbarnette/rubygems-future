@@ -124,8 +124,7 @@ module Gem
     def pull name, version
       spec = specs.search(name, Gem::Version.create(version)).first
       raise ::LoadError, "Can't find #{name}-#{version}." unless spec
-
-      Gem::Installable.new spec
+      Gem::Installable::File.new File.join(cachedir, spec.file_name)
     end
 
     # Force this repo to reload any cached data or assumptions.

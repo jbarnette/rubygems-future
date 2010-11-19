@@ -143,8 +143,8 @@ class TestGemRepo < Gem::Future::Test
 
   def test_pull
     repo do |r|
-      gem "foo", "2.0.0"
-      gem "foo", "3.0.0"
+      gem "foo", "2.0.0", :cache => true
+      gem "foo", "3.0.0", :cache => true
 
       i = r.pull "foo", "2.0.0"
 
