@@ -1,11 +1,12 @@
+require "rubygems/collection"
 require "rubygems/globber"
+require "rubygems/info"
 require "rubygems/installable"
 require "rubygems/load_path"
-require "rubygems/info"
 require "rubygems/resolver"
 require "rubygems/source"
 require "rubygems/specification"
-require "rubygems/collection"
+require "rubygems/version"
 
 module Gem
 
@@ -96,12 +97,8 @@ module Gem
     # To comply with Gem::Source.
 
     def pull name, version
-      spec = specs.search(name, "= #{version}").first
+      spec = specs.search(name, Gem::Version.create(version)).first
       raise ::LoadError, "Can't find #{name}-#{version}." unless spec
-
-      unless File.file? spec.loaded_from
-        raise ::LoadError, "Missing Gem file [#{file}."
-      end
 
       Gem::Installable.new spec
     end
@@ -133,10 +130,6 @@ module Gem
     end
 
     # :stopdoc:
-
-    def gemfiles
-      Dir["{#{paths.join ','}}/cache/*.gem"]
-    end
 
     def specfiles
       Dir["{#{paths.join ','}}/specifications/*.gemspec"]
