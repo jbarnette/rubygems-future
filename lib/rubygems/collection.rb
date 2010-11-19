@@ -46,7 +46,7 @@ module Gem
     # The first entry in the collection.
 
     def first
-      each { |e| break e }
+      @entries.first
     end
 
     # Return a collection containing only the latest entries. Depends
