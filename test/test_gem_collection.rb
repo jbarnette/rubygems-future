@@ -107,6 +107,30 @@ class TestGemCollection < Gem::Future::Test
     assert_equal [b], specs.prerelease.search("foo").entries
   end
 
+  def test_to_s
+    c = Gem::Collection.new [entry("foo", "1.0.0")]
+    assert_match(/Gem::Collection/, c.to_s)
+    assert_match(/foo/, c.to_s)
+  end
+
+  def test_uniq
+    a = entry "foo", "1.0.0"
+    b = a.dup
+    c = Gem::Collection.new [a, b]
+
+    assert_equal Gem::Collection.new([a]), c.uniq
+  end
+
+  def test_uniq!
+    a = entry "foo", "1.0.0"
+    b = a.dup
+    c = Gem::Collection.new [a, b]
+    u = c.uniq!
+
+    assert_same c, u
+    assert_equal [a], u.entries
+  end
+
   def entry name, version, platform = nil
     Gem::Info.new name, version, platform
   end
