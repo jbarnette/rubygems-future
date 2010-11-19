@@ -23,6 +23,11 @@ easily symlink an unpacked directory or something similar.
 
 More notes as I think of them.
 
+## Things to try
+
+    bin/jim ls --env # uses GEM_HOME and GEM_PATH
+    bin/jim search --source file://$GEM_HOME/cache # a local FS source
+
 ## Development
 
 Put a clone of RubyGems master in a `rubygems` directory next to this
