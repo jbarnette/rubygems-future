@@ -1,12 +1,38 @@
 # RubyGems Future Speculation
 
-An isolated repo for trying out new object model ideas for RubyGems.
+An isolated repo for trying out ridiculous ideas for RubyGems. Don't
+get excited, these are just experiments. Briefly:
+
+`Gem::Runtime` represents most of the static stuff that lives on `Gem`
+right now. It exposes `gem` and `require` (which are delegated to the
+repo), and it manages a `Gem::Repo` and a list of `Gem::Source`es.
+
+`Gem::Repo` manages a local store of gems. It provides methods for
+activation and search.
+
+`Gem::Source` is a protocol classes can implement to participate in
+installation, remote searches, and dependency resolution. The only
+source that's currently implemented is `Gem::Source::FS`, but I'd
+expect to see sources for the current marshal API, a JSON API, a set
+of Git repos, etc. `Gem::Repo` can also act like a source.
+
+When a gem is pulled from a source, it's delivered as a
+`Gem::Installable`, which knows how to install itself in a repo. The
+default implementation uses `Gem::Installer`, but one could just as
+easily symlink an unpacked directory or something similar.
+
+More notes as I think of them.
 
 ## Development
 
 Put a clone of RubyGems master in a `rubygems` directory next to this
 one. Because this is kind of a meta thing, test deps are
-vendored. `rake test` does what you'd expect.
+vendored. `rake test` does what you'd expect, but since this is a
+scratchpad coverage is very spotty.
+
+Start by looking at and playing with `bin/jim`, a really simple
+command-line exerciser. It expects to be run from the root of the
+project.
 
 I mostly dev with 1.9.2, but I periodically check things with 1.8.6,
 1.8.7, REE 1.8.7, 1.9.1, 1.9.2, MRI's head, JRuby's latest release,
