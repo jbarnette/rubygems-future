@@ -19,7 +19,8 @@ task :test do
 end
 
 desc "Test with SimpleCov."
-task "test:coverage" do
+task "test:coverage", [:file] do |_, args|
+  ENV["ONLY"]     = args.file if args.file
   ENV["COVERAGE"] = "true"
   Rake::Task[:test].invoke
 end
