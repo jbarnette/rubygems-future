@@ -68,17 +68,28 @@ module Gem
         end
 
         if options[:cache]
-          require "rubygems/builder"
-
           FileUtils.mkdir_p repo.cachedir
-
-          Dir.chdir gempath do
-            file = Gem::Builder.new(s).build
-            FileUtils.mv file, File.join(repo.cachedir, file)
-          end
+          gemfile s, gempath, File.join(repo.cachedir, s.file_name)
         end
 
         s
+      end
+
+      # Use +spec+ and the unpacked version of the spec in the
+      # +source+ dir to create a .gem file and drop it in the
+      # +destination+ directory. If a destination isn't specified the
+      # file gets dropped in the current directory.
+
+      def gemfile spec, source, destination = nil
+        destination ||= File.expand_path "."
+
+        require "rubygems/builder"
+
+        Dir.chdir source do
+          FileUtils.mv Gem::Builder.new(spec).build, destination
+        end
+
+        destination
       end
 
       # Create a real live repo on disk, in a temp dir. Cleaned up at
