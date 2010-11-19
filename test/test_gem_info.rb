@@ -8,11 +8,14 @@ class TestGemInfo < Gem::Future::Test
   end
 
   def test_equality
-    assert_equal Gem::Info.new("foo", "1.0.0"),
-      Gem::Info.new("foo", "1.0.0")
+    a = Gem::Info.new "foo", "1.0.0"
+    b = a.dup
+    c = Gem::Info.new "foo", "1.0.1"
+    
+    assert_equal a, b
+    refute_equal a, c
 
-    refute_equal Gem::Info.new("foo", "1.0.1"),
-      Gem::Info.new("foo", "1.0.0")
+    assert a.eql?(b)
   end
 
   def test_equality_unsorted_dependencies

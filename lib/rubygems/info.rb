@@ -105,6 +105,8 @@ module Gem
         version == other.version
     end
 
+    alias_method :eql?, :==
+
     def <=> other
       sorter <=> other.sorter
     end
