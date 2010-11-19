@@ -21,6 +21,10 @@ When a gem is pulled from a source, it's delivered as a
 default implementation uses `Gem::Installer`, but one could just as
 easily symlink an unpacked directory or something similar.
 
+`Gem::Info` is a very light `Gem::Specification` equivalent. It
+contains the minimum amount of information necessary to express
+dependencies and the like.
+
 More notes as I think of them.
 
 ## Things to try
