@@ -33,26 +33,49 @@ module Gem
       end
 
       # Construct a real live gem in a repo! Looks to use @repo first,
-      # then at the optional third argument.
+      # then at <tt>options[:repo]</tt>. Expects the default
+      # implementation of Gem::Repo, which uses the filesystem. If
+      # <tt>options[:cache]</tt> is true, a built version of the gem
+      # will be put in the repo's cache dir. All files will be empty.
 
-      def gem name, version = "1.0.0", repo = nil, &block
-        repo ||= @repo
+      def gem name, version = nil, options = nil, &block
+        if Hash === version && !options
+          options = version
+          version = nil
+        end
+
+        options ||= {}
+        version ||= "1.0.0"
+
+        repo = options[:repo] || @repo
         repo or raise "Need a repo or @repo to make a gem."
 
         s = spec(name, version, &block)
 
-        specpath = File.join repo.home, "specifications", s.spec_name
+        specpath = File.join repo.specdir, s.spec_name
         s.loaded_from = specpath
 
         FileUtils.mkdir_p File.dirname(specpath)
         open(specpath, "wb") { |f| f.write s.to_ruby }
 
-        gempath = File.join repo.home, "gems", s.full_name
+        gempath = File.join repo.gemdir, s.full_name
+        FileUtils.mkdir_p gempath
 
         s.files.each do |f|
           path = File.join gempath, f
           FileUtils.mkdir_p File.dirname(path)
           FileUtils.touch path
+        end
+
+        if options[:cache]
+          require "rubygems/builder"
+
+          FileUtils.mkdir_p repo.cachedir
+
+          Dir.chdir gempath do
+            file = Gem::Builder.new(s).build
+            FileUtils.mv file, File.join(repo.cachedir, file)
+          end
         end
 
         s

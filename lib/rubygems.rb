@@ -8,6 +8,11 @@ module Gem
   RubyGemsVersion = VERSION unless defined? ::Gem::RubyGemsVersion # jruby
   UserInteraction = Module.new # security
 
+  def self.configuration # builder
+    require "ostruct"
+    OpenStruct.new
+  end
+
   def self.user_home # security
     ENV["HOME"]
   end
