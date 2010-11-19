@@ -4,7 +4,7 @@ require "rubygems/repo"
 class TestGemGlobber < Gem::Future::Test
   def test_spec
     repo do |r|
-      r.gem "foo" do |s|
+      gem "foo" do |s|
         s.files = %w(lib/foo/bar.rb)
       end
 

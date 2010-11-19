@@ -25,47 +25,83 @@ require "tmpdir"
 module Gem
   module Future
     class Test < MiniTest::Unit::TestCase
-      def repo *extras, &block
-        repo = Gem::Repo.new Dir.mktmpdir, *extras
 
-        def repo.gem name, version = "1.0.0", &block
-          spec = Gem::Specification.new do |s|
-            s.author      = "RubyGems Tests"
-            s.description = "A test gem."
-            s.email       = "rubygems@example.org"
-            s.homepage    = "http://example.com"
-            s.name        = name
-            s.platform    = Gem::Platform::RUBY
-            s.summary     = "A test gem summary."
-            s.version     = version
+      # Construct a new Gem::Dependency.
 
-            yield s if block_given?
-          end
+      def dep name, *requirements
+        Gem::Dependency.new name, *requirements
+      end
 
-          specpath = File.join home, "specifications", spec.spec_name
-          spec.loaded_from = specpath
+      # Construct a real live gem in a repo! Looks to use @repo first,
+      # then at the optional third argument.
 
-          FileUtils.mkdir_p File.dirname(specpath)
-          open(specpath, "wb") { |f| f.write spec.to_ruby }
+      def gem name, version = "1.0.0", repo = nil, &block
+        repo ||= @repo
+        repo or raise "Need a repo or @repo to make a gem."
 
-          gempath = File.join home, "gems", spec.full_name
+        s = spec(name, version, &block)
 
-          spec.files.each do |f|
-            path = File.join gempath, f
-            FileUtils.mkdir_p File.dirname(path)
-            FileUtils.touch path
-          end
+        specpath = File.join repo.home, "specifications", s.spec_name
+        s.loaded_from = specpath
 
-          spec
+        FileUtils.mkdir_p File.dirname(specpath)
+        open(specpath, "wb") { |f| f.write s.to_ruby }
+
+        gempath = File.join repo.home, "gems", s.full_name
+
+        s.files.each do |f|
+          path = File.join gempath, f
+          FileUtils.mkdir_p File.dirname(path)
+          FileUtils.touch path
         end
+
+        s
+      end
+
+      # Create a real live repo on disk, in a temp dir. Cleaned up at
+      # the end of +block+, which gets yielded the Gem::Repo
+      # instance. any +extras+ are passed along to Gem::Repo.new.
+
+      def repo *extras, &block
+        old_repo = @repo if defined? @repo
+        @repo = repo = Gem::Repo.new(Dir.mktmpdir, *extras)
 
         begin
           yield repo
         ensure
+          @repo = old_repo
           FileUtils.rm_rf repo.home
         end
 
         nil
+      end
+
+      # Construct a new Gem::Requirement.
+
+      def req *requirements
+        return requirements.first if Gem::Requirement === requirements.first
+        Gem::Requirement.create requirements
+      end
+
+      # Construct a new Gem::Specification.
+
+      def spec name, version, &block
+        Gem::Specification.new name, v(version) do |s|
+          s.author      = "RubyGems Future Tests"
+          s.description = "A test gem."
+          s.email       = "rubygems@example.org"
+          s.homepage    = "http://example.com"
+          s.platform    = Gem::Platform::RUBY
+          s.summary     = "A test gem summary."
+
+          yield s if block_given?
+        end
+      end
+
+      # Construct a new Gem::Version.
+
+      def v string
+        Gem::Version.create string
       end
     end
   end

@@ -14,7 +14,7 @@ class TestGemRepo < Gem::Future::Test
 
   def test_activate
     repo do |r|
-      r.gem "foo"
+      gem "foo"
 
       assert r.activate("foo")
       assert r.activated?("foo")
@@ -24,7 +24,7 @@ class TestGemRepo < Gem::Future::Test
 
   def test_activate_already_activated
     repo do |r|
-      r.gem "foo"
+      gem "foo"
 
       assert r.activate("foo")
       refute r.activate("foo")
@@ -33,8 +33,8 @@ class TestGemRepo < Gem::Future::Test
 
   def test_activate_already_activated_different_version
     repo do |r|
-      r.gem "foo", "1.0.0"
-      r.gem "foo", "2.0.0"
+      gem "foo", "1.0.0"
+      gem "foo", "2.0.0"
 
       r.activate "foo", "1.0.0"
 
@@ -58,7 +58,7 @@ class TestGemRepo < Gem::Future::Test
 
   def test_activate_bad_version
     repo do |r|
-      r.gem "foo", "1.0.0"
+      gem "foo", "1.0.0"
 
       ex = assert_raises LoadError do
         r.activate "foo", "3.0.0"
@@ -70,10 +70,10 @@ class TestGemRepo < Gem::Future::Test
 
   def test_activate_secondary_path
     repo do |extra|
-      extra.gem "bar"
+      gem "bar"
 
       repo extra.home do |r|
-        r.gem "foo"
+        gem "foo"
 
         assert r.activate("bar")
         assert r.activate("foo")
@@ -83,11 +83,23 @@ class TestGemRepo < Gem::Future::Test
     end
   end
 
+  def test_available?
+    repo do |r|
+      gem "foo"
+      gem "bar", "1.0.0"
+
+      assert r.available?("foo")
+      assert r.available?("bar", "< 2")
+      refute r.available?("bar", "> 2")
+      refute r.available?("baz")
+    end
+  end
+
   def test_infos
     repo do |r|
-      r.gem "foo"
-      r.gem "foo", "2.0.0"
-      r.gem "bar"
+      gem "foo"
+      gem "foo", "2.0.0"
+      gem "bar"
 
       assert_equal %w(bar foo), r.infos.latest.map { |m| m.name }.sort
       assert_kind_of Gem::Info, r.infos.first
@@ -105,9 +117,35 @@ class TestGemRepo < Gem::Future::Test
     assert_equal expected, repo.paths
   end
 
+  def test_pull
+    repo do |r|
+      gem "foo", "2.0.0"
+      gem "foo", "3.0.0"
+
+      i = r.pull "foo", "2.0.0"
+
+      assert_equal "foo", i.spec.name
+      assert_equal v("2.0.0"), i.spec.version
+    end
+  end
+
+  def test_pull_not_found
+    repo do |r|
+      gem "foo"
+
+      assert_raises LoadError do
+        r.pull "foo", "2.0.0"
+      end
+
+      assert_raises LoadError do
+        r.pull "nonexistent", "1.0.0"
+      end
+    end
+  end
+
   def test_reset
     repo do |r|
-      r.gem "foo"
+      gem "foo"
 
       refute r.infos.empty?
       FileUtils.rm_rf r.home
@@ -119,7 +157,7 @@ class TestGemRepo < Gem::Future::Test
 
   def test_require
     repo do |r|
-      r.gem "foo" do |s|
+      gem "foo" do |s|
         s.files = %w(lib/foo.rb)
       end
 
@@ -141,7 +179,7 @@ class TestGemRepo < Gem::Future::Test
 
   def test_require_secondary_path
     repo do |extra|
-      extra.gem "bar" do |s|
+      gem "bar" do |s|
         s.files = %w(lib/bar.rb)
       end
 
@@ -156,9 +194,9 @@ class TestGemRepo < Gem::Future::Test
 
   def test_specs
     repo do |r|
-      r.gem "foo"
-      r.gem "foo", "2.0.0"
-      r.gem "bar"
+      gem "foo"
+      gem "foo", "2.0.0"
+      gem "bar"
 
       assert_equal %w(bar-1.0.0 foo-1.0.0 foo-2.0.0),
       r.specs.map { |s| s.full_name }.sort
@@ -167,11 +205,17 @@ class TestGemRepo < Gem::Future::Test
 
   def test_specs_secondary_path
     repo do |extra|
-      bar = extra.gem "bar"
+      bar = gem "bar"
 
       repo extra.home do |r|
         assert_equal [bar], r.specs.entries
       end
     end
+  end
+
+  def test_to_s
+    r = Gem::Repo.new "foo"
+    assert_match "Gem::Repo", r.to_s
+    assert_match "foo", r.to_s
   end
 end

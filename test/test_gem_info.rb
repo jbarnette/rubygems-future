@@ -80,7 +80,7 @@ class TestGemInfo < Gem::Future::Test
     info.marshal_load unmarshaled
 
     assert_equal "foo", info.name
-    assert_equal Gem::Version.new("1.0.0"), info.version
+    assert_equal v("1.0.0"), info.version
     assert_equal "jruby", info.platform
 
     bar = Gem::Dependency.new "bar", "= 1.0.0"
@@ -142,7 +142,6 @@ class TestGemInfo < Gem::Future::Test
   end
 
   def test_version
-    assert_equal Gem::Version.new("1.0.0"),
-      Gem::Info.new("foo", "1.0.0").version
+    assert_equal v("1.0.0"), Gem::Info.new("foo", "1.0.0").version
   end
 end
