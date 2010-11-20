@@ -5,6 +5,7 @@ require "rubygems/installable"
 require "rubygems/load_path"
 require "rubygems/resolver"
 require "rubygems/source"
+require "rubygems/source/fs"
 require "rubygems/specification"
 require "rubygems/version"
 
@@ -48,9 +49,9 @@ module Gem
     def initialize home, *paths
       @activated = []
       @globber   = Gem::Globber.new self
+      @home      = File.expand_path home
       @load_path = Gem::LoadPath.new
       @paths     = [home, paths].flatten.uniq.map { |p| File.expand_path p }
-      @home      = File.expand_path home
     end
 
     # Find a gem named +name+ matching +requirements+ and add its lib
