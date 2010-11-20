@@ -3,7 +3,7 @@ require "rubygems/package"
 
 module Gem
   module Source
-    class FS
+    class Local
       include Gem::Source
 
       attr_reader :display

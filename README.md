@@ -12,7 +12,7 @@ activation and search.
 
 `Gem::Source` is a protocol classes can implement to participate in
 installation, remote searches, and dependency resolution. The only
-source that's currently implemented is `Gem::Source::FS`, but I'd
+source that's currently implemented is `Gem::Source::Local`, but I'd
 expect to see sources for the current marshal API, a JSON API, a set
 of Git repos, etc. `Gem::Repo` can also act like a source.
 
@@ -30,7 +30,7 @@ More notes as I think of them.
 ## Things to try
 
     bin/jim ls --env # uses GEM_HOME and GEM_PATH
-    bin/jim search --source file://$GEM_HOME/cache # a local FS source
+    bin/jim search --source file://$GEM_HOME/cache # a local source
 
 ## Development
 
