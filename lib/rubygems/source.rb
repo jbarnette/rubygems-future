@@ -65,6 +65,7 @@ module Gem
     # Make this source reload next time it's accessed.
 
     def reset
+      @infos = nil
     end
   end
 end
