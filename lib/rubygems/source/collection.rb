@@ -20,17 +20,21 @@ module Gem
       end
 
       def infos
-        sources.map { |s| s.infos }.uniq
+        infos = sources.map { |s| s.infos.entries }.flatten
+        infos.uniq!
+
+        Gem::Collection.new infos
       end
 
       def pull name, version
-        info = infos.search(name, Gem::Version.create(version)).first
+        source = sources.detect { |s| s.available? name, version }
 
-        unless info
-          raise Gem::Exception, "Can't find  #{info.display} in any source."
+        unless source
+          raise Gem::Exception,
+            "Can't find #{name}-#{version} in any source."
         end
 
-        info.source.pull name, version
+        source.pull name, version
       end
 
       def reset
@@ -38,7 +42,16 @@ module Gem
       end
 
       def specs
-        sources.map { |s| s.specs }.uniq
+        specs = sources.map { |s| s.specs.entries }.flatten
+        specs.uniq!
+
+        Gem::Collection.new specs
+      end
+ 
+      # :stopdoc:
+      
+      def to_s
+        "#<#{self.class.name}: [#{sources.map { |s| s.display }.join ', '}]>"
       end
     end
   end
