@@ -15,8 +15,9 @@ module Gem
 
     # Create a new instance with an optional Array of +entries+.
 
-    def initialize entries = nil
-      @entries = (entries || []).sort_by { |e| [e.name, e.version] }.reverse!
+    def initialize *entries
+      @entries = (entries.flatten || []).
+        sort_by! { |e| [e.name, e.version] }.reverse!
     end
 
     # Return a Hash containing the entries in this collection grouped
