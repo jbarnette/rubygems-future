@@ -4,7 +4,6 @@ require "rubygems/info"
 require "rubygems/installable/file"
 require "rubygems/load_path"
 require "rubygems/resolver"
-require "rubygems/source"
 require "rubygems/source/collection"
 require "rubygems/source/local"
 require "rubygems/specification"
@@ -17,7 +16,6 @@ module Gem
   # uninstallation. Can also be used as a source.
 
   class Repo
-    include Gem::Source
 
     # A collection of Gem::Specification instances that activated
     # through this repo.
@@ -43,6 +41,11 @@ module Gem
 
     attr_reader :paths
 
+    # A source representing this repo. The repo itself quacks like a
+    # source too.
+
+    attr_reader :source
+
     # Create a new instance backed by +home+, a location on the file
     # system. Additional search +paths+ can be provided. If they
     # exist, they're consulted during gem activation and searches.
@@ -53,6 +56,9 @@ module Gem
       @home      = File.expand_path home
       @load_path = Gem::LoadPath.new
       @paths     = [home, paths].flatten.uniq.map { |p| File.expand_path p }
+
+      sources = @paths.map { |p| Gem::Source::Local.new p }
+      @source = Gem::Source::Collection.new sources
     end
 
     # Find a gem named +name+ matching +requirements+ and add its lib
@@ -94,7 +100,7 @@ module Gem
     end
 
     def available? name, *requirements
-      !infos.search(name, *requirements).empty?
+      source.available? name, *requirements
     end
 
     # This directory contains executables for gems in this repo.
@@ -109,6 +115,10 @@ module Gem
       @cachedir ||= File.join home, "cache"
     end
 
+    def display
+      source.display
+    end
+
     # This directory contains documentation for gems in this repo.
 
     def docdir
@@ -121,19 +131,20 @@ module Gem
       @gemdir ||= File.join home, "gems"
     end
 
+    def infos
+      source.infos
+    end
+
     # To comply with Gem::Source.
 
     def pull name, version
-      spec = specs.search(name, Gem::Version.create(version)).first
-      raise ::LoadError, "Can't find #{name}-#{version}." unless spec
-      Gem::Installable::File.new File.join(cachedir, spec.file_name)
+      source.pull name, version
     end
 
-    # Force this repo to reload any cached data or assumptions.
+    # Force this repo to reload any cached data.
 
     def reset
-      @infos = nil
-      @specs = nil
+      source.reset
     end
 
     # Require a feature, activating a gem from this repo if
@@ -143,7 +154,7 @@ module Gem
     def require feature
       spec = globber.spec feature
       activate spec.name, spec.version if spec
-      gem_original_require feature
+      gem_original_require feature # FIX
     end
 
     # This directory contains Ruby gemspec files for each gem in this
@@ -153,20 +164,11 @@ module Gem
       @specdir ||= File.join home, "specifications"
     end
 
-    # Return a collection of Gem::Specification\s. See Gem::Collection
-    # for examples of how this collection is searchable.
-
     def specs
-      @specs ||= Gem::Collection.new(specfiles.map { |file|
-        Gem::Specification.load file
-      })
+      source.specs
     end
 
     # :stopdoc:
-
-    def specfiles
-      Dir["{#{paths.join ','}}/specifications/*.gemspec"]
-    end
 
     def to_s
       "#<#{self.class.name}: #{home}>"

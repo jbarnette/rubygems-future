@@ -157,11 +157,11 @@ class TestGemRepo < Gem::Future::Test
     repo do |r|
       gem "foo"
 
-      assert_raises LoadError do
+      assert_raises Gem::Exception do
         r.pull "foo", "2.0.0"
       end
 
-      assert_raises LoadError do
+      assert_raises Gem::Exception do
         r.pull "nonexistent", "1.0.0"
       end
     end
