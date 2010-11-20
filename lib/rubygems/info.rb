@@ -47,10 +47,10 @@ module Gem
     # Create a new instance. +platform+ is optional, and defaults to
     # +ruby+. If a block is given the new instance is yielded.
 
-    def initialize name, version, platform = "ruby", source = nil, &block
+    def initialize name, version, platform = nil, source = nil, &block
       @dependencies = []
       @name         = name
-      @platform     = platform
+      @platform     = platform || "ruby"
       @source       = source
       @version      = Gem::Version.create version
 
@@ -61,9 +61,12 @@ module Gem
     # and platform (if not ruby).
 
     def display
-      @display ||= (d = "#{name}-#{version}"
-                    d << "-#{platform}" unless "ruby" == platform
-                    d)
+      return @display if defined? @display
+
+      @display = "#{name}-#{version}"
+      @display << "-#{platform}" unless "ruby" == platform
+
+      @display
     end
 
     # :stopdoc:
