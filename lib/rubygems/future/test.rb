@@ -72,6 +72,8 @@ module Gem
           gemfile s, gempath, File.join(repo.cachedir, s.file_name)
         end
 
+        repo.reset
+
         s
       end
 
