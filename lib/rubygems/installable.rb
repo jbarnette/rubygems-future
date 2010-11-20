@@ -1,5 +1,3 @@
-require "rubygems/installable/file"
-
 module Gem
 
   # A protocol representing the ability to install a gem into a

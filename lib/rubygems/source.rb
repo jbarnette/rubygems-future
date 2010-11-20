@@ -1,6 +1,5 @@
 require "rubygems/collection"
 require "rubygems/info"
-require "rubygems/source/fs"
 
 require "uri"
 

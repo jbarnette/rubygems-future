@@ -1,4 +1,5 @@
 require "fileutils"
+require "rubygems/installable"
 require "rubygems/installer"
 require "rubygems/package"
 
