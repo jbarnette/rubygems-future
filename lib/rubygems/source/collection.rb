@@ -6,7 +6,7 @@ module Gem
     # Follows the <tt>Gem::Source</tt> protocol, combining results
     # from multiple sources.
 
-    class Multi
+    class Collection
       include Gem::Source
 
       attr_reader :sources
