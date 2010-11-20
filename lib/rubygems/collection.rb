@@ -13,11 +13,10 @@ module Gem
 
     attr_reader :entries
 
-    # Create a new instance with an optional Array of +entries+.
+    # Create a new instance with an Array of +entries+.
 
-    def initialize *entries
-      @entries = (entries.flatten || []).
-        sort_by! { |e| [e.name, e.version] }.reverse!
+    def initialize entries
+      @entries = entries
     end
 
     # Return a Hash containing the entries in this collection grouped
@@ -50,15 +49,10 @@ module Gem
       @entries.first
     end
 
-    # Return a collection containing only the latest entries. Depends
-    # on entries being presorted.
+    # Return a collection containing only the latest entries.
 
     def latest
-      latest = Hash.new { |h, k| h[k] = [] }
-      @entries.each { |e| latest[e.name] << e }
-
-      self.class.new latest.values.map { |a| a.first }.
-        sort_by { |e| e.version }
+      self.class.new by(:name).values.map { |arr| arr.max }
     end
 
     # Return a collection containing only prerelease entries.
