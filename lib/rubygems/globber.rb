@@ -6,7 +6,9 @@ module Gem
 
     def spec path
       @repo.specs.detect do |spec|
-        return unless libglob = libglob(spec)
+        libglob = libglob spec
+        return unless libglob
+
         glob = File.join libglob, "#{path}#{Gem.suffix_pattern}"
         !Dir[glob].select { |f| File.file? f.untaint }.empty?
       end
@@ -17,10 +19,11 @@ module Gem
     def libglob spec
       return unless spec.require_paths
 
+      # Can't just do the path against the repo, since it might be
+      # under something other than home.
+      
       gems = File.expand_path "../../gems", spec.loaded_from
-      glob = "#{gems}/#{spec.full_name}/{#{spec.require_paths.join ','}}"
-
-      (@libs ||= {})[spec.object_id] ||= glob # cache
+      "#{gems}/#{spec.full_name}/{#{spec.require_paths.join ','}}"
     end
   end
 end
