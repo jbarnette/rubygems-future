@@ -1,3 +1,4 @@
+require "fileutils"
 require "rubygems/installer"
 require "rubygems/package"
 
@@ -22,11 +23,13 @@ module Gem
 
         # FIX: refactor Gem::Installer.
 
+        FileUtils.mkdir_p ::File.join(repo.specdir)
+
         source_index = Object.new
         def source_index.method_missing *; end
 
         options = {
-          :bin_dir             => File.join(repo.home, "bin"),
+          :bin_dir             => ::File.join(repo.home, "bin"),
           :env_shebang         => false,
           :force               => false,
           :ignore_dependencies => true,
@@ -34,7 +37,7 @@ module Gem
           :source_index        => source_index,
         }
 
-        Gem::Installer.new(spec.loaded_from, options).install
+        Gem::Installer.new(path, options).install
         repo.reset
       end
 
