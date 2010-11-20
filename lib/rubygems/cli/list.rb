@@ -20,7 +20,8 @@ module Gem
       end
 
       def run runtime, args
-        results = filter(runtime.repo.infos).search(args.shift).by(:name)
+        results = filter(runtime.repo.infos).
+          search(args.shift, *requirements).by(:name)
 
         results.keys.sort_by(&:downcase).each do |name|
           versions = results[name].map(&:version)

@@ -1,14 +1,21 @@
 require "rubygems/cli/command"
+require "rubygems/requirement"
 
 module Gem
   module CLI
     class Filtered < Gem::CLI::Command
+
+      # Any version requirements specified on the command line.
+
+      attr_reader :requirements
+
       def initialize opts
         super opts
 
-        @all         = false
-        @prereleases = false
-        @releases    = false
+        @all          = false
+        @prereleases  = false
+        @releases     = false
+        @requirements = []
 
         opts.on "--all", "Any gem." do
           @all = true
@@ -20,6 +27,12 @@ module Gem
 
         opts.on "--pre", "--prerelease", "Only prerelease gems." do
           @prereleases = true
+        end
+
+        opts.on "--version REQ", "-v",
+          "Version requirement. Multiple OK." do |req|
+
+          @requirements << Gem::Requirement.create(req)
         end
       end
 

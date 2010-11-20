@@ -38,22 +38,22 @@ module Gem
         end
 
         opts.on "--home PATH", "-r",
-          "Set repo home. Default is #@home." do |r|
+          "Repo home. Default is #@home." do |r|
 
           @home = r
         end
 
         opts.on "--path PATH", "-p",
-          "Add extra repo path. Multiple OK." do |p|
+          "Extra repo path. Multiple OK." do |p|
 
           @paths << p
         end
 
-        opts.on "--quiet", "-q", "STFU." do
+        opts.on "--quiet", "-q", "Silence!" do
           @quiet = true
         end
 
-        opts.on "--source URL", "-s", "Adda source URL. Multiple OK." do |s|
+        opts.on "--source URL", "-s", "Source URL. Multiple OK." do |s|
           @sources << s
         end
 

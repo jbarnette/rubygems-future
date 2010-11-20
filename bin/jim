@@ -24,7 +24,7 @@ klasses = Gem::CLI.constants.map { |c| Gem::CLI.const_get c }.
 OptionParser.new do |o|
   o.banner = "Usage: #{bin} command [arguments] [options]\n\n"
 
-  o.on "--help", "-h", "-?", "Show relevant help." do
+  o.on "--help", "-h", "-?", "Show help." do
     puts o
     exit
   end
