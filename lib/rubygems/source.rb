@@ -32,7 +32,12 @@ module Gem
       klass.new url
     end
 
-    # A pretty string representing this source. A URL is a good bet.
+    def available? name, *requirements
+      !specs.search(name, *requirements).empty?
+    end
+
+    # A pretty string representing this source. A URL or path is a
+    # good bet.
 
     def display
       "unknown"
