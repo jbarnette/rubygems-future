@@ -32,16 +32,20 @@ module Gem
         @sources = []
         @verbose = false
 
-        opts.on "--env", "Use GEM_HOME and GEM_PATH." do
+        opts.on "--env", "-e", "Use GEM_HOME and GEM_PATH." do
           @home  = ENV["GEM_HOME"]
           @paths = ENV["GEM_PATH"].split File::PATH_SEPARATOR
         end
 
-        opts.on "--home PATH", "Set repo home. Default is #@home." do |r|
+        opts.on "--home PATH", "-r",
+          "Set repo home. Default is #@home." do |r|
+
           @home = r
         end
 
-        opts.on "--path PATH", "Add extra repo path. Multiple OK." do |p|
+        opts.on "--path PATH", "-p",
+          "Add extra repo path. Multiple OK." do |p|
+
           @paths << p
         end
 

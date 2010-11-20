@@ -29,8 +29,8 @@ More notes as I think of them.
 
 ## Things to try
 
-    bin/jim ls --env # uses GEM_HOME and GEM_PATH
-    bin/jim search --source file://$GEM_HOME/cache # a local source
+    bin/jim ls -e # uses GEM_HOME and GEM_PATH
+    bin/jim search -s $GEM_HOME # a local source
 
 ## Development
 

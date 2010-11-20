@@ -10,16 +10,15 @@ module Gem
         @prereleases = false
         @releases    = false
 
-        opts.on "--all", "Display all matches." do
+        opts.on "--all", "Any gem." do
           @all = true
         end
 
-        opts.on "--released", "Display only released matches." do
+        opts.on "--released", "Only released gems." do
           @releases =true
         end
 
-        opts.on "--pre", "--prerelease",
-        "Display only prerelease matches." do
+        opts.on "--pre", "--prerelease", "Only prerelease gems." do
           @prereleases = true
         end
       end
