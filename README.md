@@ -25,12 +25,14 @@ easily symlink an unpacked directory or something similar.
 contains the minimum amount of information necessary to express
 dependencies and the like.
 
-More notes as I think of them.
+`Gem::Collection` unifies many of the sorting, filtering, and
+searching idioms scattered around RubyGems.
 
 ## Things to try
 
     bin/jim ls -e # uses GEM_HOME and GEM_PATH
     bin/jim search -s $GEM_HOME # a local source
+    bin/jim install foo -s $GEM_HOME # install from $GEM_HOME to tmp/repo
 
 ## Development
 
