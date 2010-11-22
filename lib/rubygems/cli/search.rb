@@ -30,13 +30,7 @@ module Gem
       end
 
       def run runtime, args
-        pattern = args.shift
-
-        results = runtime.sources.map do |source|
-          filter(source.infos).search pattern
-        end
-
-        results = results.inject { |m, i| m.concat i }
+        results = narrow(runtime.source.infos).search args.shift
 
         if show_sources?
           results.by(:source).each do |source, infos|

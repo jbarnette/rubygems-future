@@ -42,13 +42,12 @@ module Gem
         @all
       end
 
-      # Filter +collection+ based on the options set. Releases and
-      # prereleases are obviously mutually exclusive.
+      # Apply filters to +collection+ in-place.
 
-      def filter collection
-        collection = collection.latest     unless all?
-        collection = collection.released   if releases?
-        collection = collection.prerelease if prereleases?
+      def narrow collection
+        collection.latest!     unless all?
+        collection.released!   if releases?
+        collection.prerelease! if prereleases?
         collection
       end
 

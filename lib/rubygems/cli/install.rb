@@ -1,4 +1,5 @@
 require "rubygems/cli/filtered"
+require "rubygems/not_found"
 
 module Gem
   module CLI
@@ -34,7 +35,11 @@ module Gem
       end
 
       def run runtime, args
-        p args
+        name = args.shift
+        raise Gem::Exception, "Need a gem name to install." unless name
+
+        inst = runtime.source.pull name, *requirements
+        runtime.repo.install inst
       end
     end
   end

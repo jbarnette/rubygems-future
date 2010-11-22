@@ -1,3 +1,4 @@
+require "rubygems/not_found"
 require "rubygems/source"
 
 module Gem
@@ -20,21 +21,14 @@ module Gem
       end
 
       def infos
-        infos = sources.map { |s| s.infos.entries }.flatten
-        infos.uniq!
-
-        Gem::Collection.new infos
+        Gem::Filter.new sources.map { |s| s.infos.wrapped }.flatten
       end
 
-      def pull name, version
-        source = sources.detect { |s| s.available? name, version }
+      def pull name, *requirements
+        source = sources.detect { |s| s.available? name, *requirements }
+        raise Gem::NotFound.new(name, *requirements) unless source
 
-        unless source
-          raise Gem::Exception,
-            "Can't find #{name}-#{version} in any source."
-        end
-
-        source.pull name, version
+        source.pull name, *requirements
       end
 
       def reset
@@ -42,14 +36,11 @@ module Gem
       end
 
       def specs
-        specs = sources.map { |s| s.specs.entries }.flatten
-        specs.uniq!
-
-        Gem::Collection.new specs
+        Gem::Filter.new sources.map { |s| s.specs.wrapped }.flatten
       end
- 
+
       # :stopdoc:
-      
+
       def to_s
         "#<#{self.class.name}: [#{sources.map { |s| s.display }.join ', '}]>"
       end

@@ -157,11 +157,11 @@ class TestGemRepo < Gem::Future::Test
     repo do |r|
       gem "foo"
 
-      assert_raises Gem::Exception do
+      assert_raises Gem::NotFound do
         r.pull "foo", "2.0.0"
       end
 
-      assert_raises Gem::Exception do
+      assert_raises Gem::NotFound do
         r.pull "nonexistent", "1.0.0"
       end
     end
@@ -238,7 +238,7 @@ class TestGemRepo < Gem::Future::Test
       bar = gem "bar"
 
       repo extra.home do |r|
-        assert_equal [bar], r.specs.entries
+        assert_equal [bar], r.specs.wrapped
       end
     end
   end

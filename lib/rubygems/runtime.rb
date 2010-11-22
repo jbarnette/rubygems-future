@@ -10,13 +10,14 @@ module Gem
 
     attr_accessor :repo
 
-    # An Array of sources for searching and installation.
+    # A Gem::Source::Collection allowing combined searches of all the
+    # sources this runtime knows about.
 
-    attr_reader :sources
+    attr_reader :source
 
     def initialize repo
       @repo    = repo
-      @sources = []
+      @source  = Gem::Source::Collection.new
     end
 
     def gem name, *requirements
@@ -25,6 +26,12 @@ module Gem
 
     def require feature
       @repo.require feature
+    end
+
+    # An Array of sources for searching and installation.
+
+    def sources
+      source.sources
     end
   end
 end

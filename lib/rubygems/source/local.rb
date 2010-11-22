@@ -1,3 +1,4 @@
+require "rubygems/filter"
 require "rubygems/installable"
 require "rubygems/package"
 require "uri"
@@ -41,11 +42,13 @@ module Gem
         reset
       end
 
-      def pull name, version
-        gem  = "#{name}-#{version}.gem"
+      def pull name, *requirements
+        spec = specs.get name, *requirements
+        raise Gem::NotFound.new(name, version) unless spec
+
+        gem  = spec.file_name
         file = files.detect {|f| gem == File.basename(f) }
 
-        raise Gem::Exception, "Can't find #{name}-#{version}." unless file
         Gem::Installable::File.new file
       end
 
@@ -83,7 +86,7 @@ module Gem
         end
 
         @files = files
-        @specs = Gem::Collection.new specs
+        @specs = Gem::Filter.new specs
 
         super
       end

@@ -20,7 +20,7 @@ module Gem
       end
 
       def run runtime, args
-        results = filter(runtime.repo.infos).
+        results = narrow(runtime.repo.infos).
           search(args.shift, *requirements).by(:name)
 
         results.keys.sort_by(&:downcase).each do |name|

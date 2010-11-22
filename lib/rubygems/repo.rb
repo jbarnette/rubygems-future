@@ -1,4 +1,4 @@
-require "rubygems/collection"
+require "rubygems/filter"
 require "rubygems/globber"
 require "rubygems/info"
 require "rubygems/installable/file"
@@ -133,6 +133,14 @@ module Gem
 
     def infos
       source.infos
+    end
+
+    # Install +installable+ in this repo. The default impl just calls
+    # <tt>installable.install(self)</tt>, but this is probably where
+    # hooks and stuff would go.
+
+    def install installable
+      installable.install self
     end
 
     # To comply with Gem::Source.
