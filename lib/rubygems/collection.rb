@@ -1,3 +1,5 @@
+require "tsort"
+
 module Gem
 
   # Wraps an Enumerable collection of Gem::Info or Gem::Specification
@@ -11,6 +13,7 @@ module Gem
 
   class Collection
     include Enumerable
+    include TSort
 
     # The Enumerable wrapped by this collection.
 
@@ -73,6 +76,36 @@ module Gem
       @latest = grouped.values.map { |v| v.max }
 
       nil
+    end
+
+    # Returns an Array containing the filtered entries in this
+    # collection ordered by dependency, so that no entry depends on an
+    # entry earlier in the list. This will not add entries for missing
+    # dependencies: It only orders the entries in this
+    # collection. Passing +development+ as +true+ will consult
+    # development dependencies as well as runtime.
+
+    def ordered development = false
+      @development = development
+
+      sorted = strongly_connected_components.flatten
+      result = []
+      seen   = {}
+
+      sorted.each do |entry|
+        index = seen[entry.name]
+
+        if index
+          if result[index].version < entry.version
+            result[index] = entry
+          end
+        else
+          seen[entry.name] = result.length
+          result << entry
+        end
+      end
+
+      result
     end
 
     # Return a new collection exposing only entries with prerelease
@@ -202,5 +235,19 @@ module Gem
       arr = [self.class.name, features, names].reject { |e| e.empty? }
       "#<#{arr.join ': '}>"
     end
+
+    def tsort_each_child current, &block
+      allowed  = [nil, :runtime]
+      allowed << :development if @development
+
+      deps = current.dependencies.select { |d| allowed.include? d.type }
+
+      deps.each do |dep|
+        target = detect { |e| dep.matches_spec? e }
+        yield target if target
+      end
+    end
+
+    alias_method :tsort_each_node, :each
   end
 end
