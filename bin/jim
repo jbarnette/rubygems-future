@@ -35,6 +35,14 @@ OptionParser.new do |o|
   verb  = /^-/ !~ ARGV.first && ARGV.shift
   klass = klasses.detect { |c| c.verbs.include? verb }
 
+  # If there's an unambiguous match at the front of a verb (e.g., li
+  # -> list) go ahead and use the command.
+
+  if verb
+    candidates = klasses.select { |c| c.verbs.any? { |v| /^#{verb}/ =~ v } }
+    klass      = candidates.first if 1 == candidates.size
+  end
+
   # If we can't find a command, be useful and show a list of all the
   # available ones.
 
