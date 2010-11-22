@@ -21,7 +21,7 @@ module Gem
       end
 
       def infos
-        Gem::Filter.new sources.map { |s| s.infos.wrapped }.flatten
+        Gem::Collection.new sources.map { |s| s.infos.wrapped }.flatten
       end
 
       def pull name, *requirements
@@ -36,7 +36,7 @@ module Gem
       end
 
       def specs
-        Gem::Filter.new sources.map { |s| s.specs.wrapped }.flatten
+        Gem::Collection.new sources.map { |s| s.specs.wrapped }.flatten
       end
 
       # :stopdoc:

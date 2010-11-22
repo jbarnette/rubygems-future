@@ -1,4 +1,4 @@
-require "rubygems/filter"
+require "rubygems/collection"
 require "rubygems/info"
 
 require "uri"
@@ -49,7 +49,7 @@ module Gem
     # method uses +specs+ to populate.
 
     def infos
-      @infos ||= Gem::Filter.new specs.wrapped.map { |s|
+      @infos ||= Gem::Collection.new specs.wrapped.map { |s|
         Gem::Info.for s, self
       }
     end

@@ -1,4 +1,4 @@
-require "rubygems/filter"
+require "rubygems/collection"
 require "rubygems/globber"
 require "rubygems/info"
 require "rubygems/installable/file"

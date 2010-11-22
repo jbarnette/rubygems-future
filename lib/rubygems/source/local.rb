@@ -1,4 +1,4 @@
-require "rubygems/filter"
+require "rubygems/collection"
 require "rubygems/installable"
 require "rubygems/package"
 require "uri"
@@ -86,7 +86,7 @@ module Gem
         end
 
         @files = files
-        @specs = Gem::Filter.new specs
+        @specs = Gem::Collection.new specs
 
         super
       end

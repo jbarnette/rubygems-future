@@ -6,13 +6,13 @@ module Gem
   # want to subclass to provide more efficient behavior.
   #
   # Each filter is available in a mutating and a non-mutating
-  # version. Non-mutating versions return a new Gem::Filter, which
+  # version. Non-mutating versions return a new Gem::Collection which
   # shares its parent's wrapped collection.
 
-  class Filter
+  class Collection
     include Enumerable
 
-    # The Enumerable wrapped by this filter.
+    # The Enumerable wrapped by this collection.
 
     attr_reader :wrapped
 
@@ -51,19 +51,21 @@ module Gem
       0 == count
     end
 
-    # Return a new filter showing only the latest version of any entry.
+    # Return a new collection exposing only the latest version of any entry.
 
     def latest
       duplicate { |c| c.latest! }
     end
 
-    # Does this filter only allow the latest version of any entry?
+    # Does this collection only expose the latest version of any
+    # entry?
 
     def latest?
       !!@latest
     end
 
-    # Update the filter to only show the latest version of any entry.
+    # Update the collection to only expose the latest version of any
+    # entry.
 
     def latest!
       grouped = Hash.new { |h, k| h[k] = [] }
@@ -73,38 +75,42 @@ module Gem
       nil
     end
 
-    # Return a new filter showing only entries with prerelease versions.
+    # Return a new collection exposing only entries with prerelease
+    # versions.
 
     def prerelease
       duplicate { |c| c.prerelease! }
     end
 
-    # Does this filter only allow entries with prerelease versions?
+    # Does this collection only expose entries with prerelease
+    # versions?
 
     def prerelease?
       @prerelease
     end
 
-    # Update the filter to only show entries with prerelease versions.
+    # Update the collection to only expose entries with prerelease
+    # versions.
 
     def prerelease!
       @prerelease = true
       nil
     end
 
-    # Return a new filter showing only entries with released versions.
+    # Return a new collection exposing only entries with released
+    # versions.
 
     def released
       duplicate { |c| c.released! }
     end
 
-    # Does this filter only allow entries with released versions?
+    # Does this collection only expose entries with released versions?
 
     def released?
       @released
     end
 
-    # Update the filter to only show entries with released versions.
+    # Update the collection to only show entries with released versions.
 
     def released!
       @released = true
@@ -117,14 +123,14 @@ module Gem
     # expressed as strings or Gem::Requirement instances. The last
     # argument can be an optional Hash of +options+. The only
     # currently supported key is <tt>:platform</tt>. Returns a new
-    # filter.
+    # collection.
 
     def search pattern, *versions
       options    = Hash === versions.last ? versions.pop : {}
       pattern    = /#{pattern}/i unless Regexp === pattern
       dependency = Gem::Dependency.new pattern, *versions
 
-      Gem::Filter.new select { |e|
+      Gem::Collection.new select { |e|
         dependency.matches_spec?(e) &&
           options[:platform].nil? or options[:platform] == e.platform
       }
@@ -137,7 +143,7 @@ module Gem
       search(/\A#{name}\Z/, *versions).first
     end
 
-    # Return a new filter with duplicates removed.
+    # Return a new collection with duplicates removed.
 
     def unique
       duplicate wrapped.uniq

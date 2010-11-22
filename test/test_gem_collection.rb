@@ -1,5 +1,5 @@
 require "rubygems/future/test"
-require "rubygems/filter"
+require "rubygems/collection"
 require "rubygems/info"
 
 class TestGemFilter < Gem::Future::Test
@@ -111,7 +111,7 @@ class TestGemFilter < Gem::Future::Test
     a = entry "foobar", "1.0.0"
     b = entry "foobaz", "1.0.0"
 
-    specs = Gem::Filter.new [a, b]
+    specs = Gem::Collection.new [a, b]
     assert_equal [a, b], specs.search(/foo/).sort
   end
 
@@ -119,7 +119,7 @@ class TestGemFilter < Gem::Future::Test
     a = entry "foo", "1.0.0"
     b = entry "foo", "2.0.0"
 
-    specs = Gem::Filter.new [a, b]
+    specs = Gem::Collection.new [a, b]
     assert_equal [b], specs.search("foo", "> 1.0.0").entries
   end
 
@@ -127,7 +127,7 @@ class TestGemFilter < Gem::Future::Test
     a = entry "foo", "1.0.0"
     b = entry "foo", "1.0.0", "jruby"
 
-    specs = Gem::Filter.new [a, b]
+    specs = Gem::Collection.new [a, b]
     assert_equal [b], specs.search("foo", :platform => "jruby").entries
   end
 
@@ -135,7 +135,7 @@ class TestGemFilter < Gem::Future::Test
     a = entry "foo", "1.0.0"
     b = entry "foo", "1.0.0.pre"
 
-    specs = Gem::Filter.new [a, b]
+    specs = Gem::Collection.new [a, b]
     assert_equal [b], specs.prerelease.search("foo").entries
   end
 
@@ -161,6 +161,6 @@ class TestGemFilter < Gem::Future::Test
   end
 
   def filter *args, &block
-    Gem::Filter.new args, &block
+    Gem::Collection.new args, &block
   end
 end
