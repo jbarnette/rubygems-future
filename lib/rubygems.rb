@@ -1,6 +1,6 @@
 # Some stubs to keep from having to do the real 'require
 # "rubygems"'. It comes with too much cruft. Many other RG files don't
-# do well with this. This does a really good idea of showing what
+# do well with this. This does a really good job of showing what
 # methods should be moved off of the Gem module too.
 
 module Gem
