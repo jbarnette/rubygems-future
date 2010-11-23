@@ -32,7 +32,7 @@ module Gem
 
     def by property
       grouped = Hash.new { |h, k| h[k] = [] }
-      each { |e| grouped[e.send property] << e }
+      each { |e| grouped[e.send(property)] << e }
       grouped
     end
 
@@ -44,14 +44,18 @@ module Gem
         next if prerelease? && !e.version.prerelease?
         next if released? && e.version.prerelease?
 
-        block.call e
+        block.call(e)
       end
     end
 
     # No matches?
 
     def empty?
-      0 == count
+      0 == size
+    end
+
+    def first
+      each { |e| return e }
     end
 
     # Return a new collection exposing only the latest version of any entry.
@@ -167,6 +171,10 @@ module Gem
         dependency.matches_spec?(e) &&
           options[:platform].nil? or options[:platform] == e.platform
       }
+    end
+
+    def size
+      inject(0) { |m, _| m + 1 }
     end
 
     # Get the first entry that matches +name+ and +versions+. Takes an
