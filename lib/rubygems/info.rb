@@ -70,16 +70,13 @@ module Gem
       @version      = Gem::Version.create version
     end
 
-    # A string suitable for pretty display. Includes name, version,
-    # and platform (if not ruby).
+    # A string suitable for display and file names. Includes name,
+    # version, and platform (if not ruby).
 
-    def display
-      return @display if defined? @display
-
-      @display = "#{name}-#{version}"
-      @display << "-#{platform}" unless "ruby" == platform
-
-      @display
+    def id
+      return @id if defined? @id
+      noplat = platform.nil? || platform == Gem::Platform::RUBY
+      @id = noplat ? "#{name}-#{version}" : "#{name}-#{version}-#{platform}"
     end
 
     # :stopdoc:
@@ -110,7 +107,7 @@ module Gem
     end
 
     def to_s
-      "#<#{self.class.name}: #{display}>"
+      "#<#{self.class.name}: #{id}>"
     end
 
     def sorter
