@@ -14,7 +14,9 @@ if ENV["COVERAGE"]
   end
 end
 
-require "rubygems" # fake
+require "rubygems"
+
+Gem::DefaultUserInteraction.ui = Gem::SilentUI.new
 
 require "fileutils"
 require "minitest/autorun"

@@ -125,8 +125,18 @@ class TestGemRepo < Gem::Future::Test
       gem "foo", "2.0.0"
       gem "bar"
 
-      assert_equal %w(bar foo), r.gems.latest.map { |m| m.name }.sort
-      assert_kind_of Gem::Info, r.gems.first
+      assert_equal %w(bar-1.0.0 foo-1.0.0 foo-2.0.0),
+      r.gems.map { |g| g.id }.sort
+    end
+  end
+
+  def test_gems_secondary_path
+    repo do |extra|
+      bar = gem "bar"
+
+      repo extra.home do |r|
+        assert_equal [bar], r.gems.wrapped
+      end
     end
   end
 
@@ -219,27 +229,6 @@ class TestGemRepo < Gem::Future::Test
   def test_specdir
     repo do |r|
       assert_equal File.join(r.home, "specifications"), r.specdir
-    end
-  end
-
-  def test_gems
-    repo do |r|
-      gem "foo"
-      gem "foo", "2.0.0"
-      gem "bar"
-
-      assert_equal %w(bar-1.0.0 foo-1.0.0 foo-2.0.0),
-      r.gems.map { |g| g.id }.sort
-    end
-  end
-
-  def test_gems_secondary_path
-    repo do |extra|
-      bar = gem "bar"
-
-      repo extra.home do |r|
-        assert_equal [bar], r.gems.wrapped
-      end
     end
   end
 
