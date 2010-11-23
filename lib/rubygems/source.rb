@@ -33,7 +33,7 @@ module Gem
     end
 
     def available? name, *requirements
-      !gems.search(name, *requirements).empty?
+      !!self[name, *requirements]
     end
 
     # A pretty string representing this source. A URL or path is a
@@ -43,10 +43,11 @@ module Gem
       "unknown"
     end
 
-    # Return the first Gem::Info matching +name+ and +requirements+.
+    # Return the first Gem::Info matching +name+ and
+    # +requirements+. Return +nil+ if no match is found.
 
-    def gem name, *requirements
-      gems.search(name, *requirements).first
+    def [] name, *requirements
+      gems.get name, *requirements
     end
 
     # Return a collection of Gem::Info\s, a lightweight equivalent to

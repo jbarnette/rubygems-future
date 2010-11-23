@@ -42,16 +42,15 @@ module Gem
       end
 
       def pull name, *requirements
-        gem = gems.get name, *requirements
-        raise Gem::NotFound.new(name, version) unless gem
+        g = self[name, *requirements]
+        raise Gem::NotFound.new(name, version) unless g
 
-        file = files.detect {|f| "#{gem.id}.gem" == File.basename(f) }
+        file = files.detect { |f| "#{g.id}.gem" == File.basename(f) }
         Gem::Installable::File.new file
       end
 
       def reset
-        files = nil
-        gems  = nil
+        files, gems = nil
 
         if File.file? path
           unless /\.gem/i =~ path

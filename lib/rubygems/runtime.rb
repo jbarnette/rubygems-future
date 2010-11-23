@@ -20,6 +20,14 @@ module Gem
       @source  = Gem::Source::Collection.new
     end
 
+    def disable
+      fail "implement me!"
+    end
+
+    def enable
+      fail "implement me!"
+    end
+
     def gem name, *requirements
       @repo.activate name, *requirements
     end

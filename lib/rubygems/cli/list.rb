@@ -20,11 +20,9 @@ module Gem
       end
 
       def run runtime, args
-        results = narrow(runtime.repo.gems).
-          search(args.shift, *requirements).by(:name)
+        results = narrow(runtime.repo.gems).search args.shift, *requirements
 
-        results.keys.sort_by(&:downcase).each do |name|
-          versions = results[name].map(&:version)
+        versioned results do |name, versions|
           puts "#{name} (#{versions.join ', '})"
         end
       end

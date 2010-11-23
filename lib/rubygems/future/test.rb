@@ -1,22 +1,17 @@
 Dir["vendor/*/lib"].each { |lib| $: << File.expand_path(lib) }
-$:.push File.expand_path("../rubygems/lib")
-
-if ENV["COVERAGE"]
-  module Gem; end
-
-  require "rubygems/version"
-  require "simplecov"
-
-  SimpleCov.start do
-    add_filter "/lib/rubygems.rb"
-    add_filter "/test/"
-    add_filter "/vendor/"
-  end
-end
 
 require "rubygems"
 
 Gem::DefaultUserInteraction.ui = Gem::SilentUI.new
+
+if ENV["COVERAGE"]
+  require "simplecov"
+
+  SimpleCov.start do
+    add_filter "/test/"
+    add_filter "/vendor/"
+  end
+end
 
 require "fileutils"
 require "minitest/autorun"
@@ -75,7 +70,7 @@ module Gem
         end
 
         repo.reset
-        repo.gem name, version
+        repo[name, version]
       end
 
       # Use +spec+ and the unpacked version of the spec in the
@@ -110,7 +105,7 @@ module Gem
           FileUtils.rm_rf repo.home
         end
 
-        nil
+        repo
       end
 
       # Construct a new Gem::Requirement.
@@ -124,7 +119,7 @@ module Gem
 
       def spec name, version, &block
         Gem::Specification.new name, v(version) do |s|
-          s.author      = "RubyGems Future Tests"
+          s.author      = "RubyGems Tests"
           s.description = "A test gem."
           s.email       = "rubygems@example.org"
           s.homepage    = "http://example.com"

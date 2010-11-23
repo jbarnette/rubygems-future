@@ -3,6 +3,7 @@ module Gem
   # Manages a load path. Wraps $LOAD_PATH by default.
 
   class LoadPath
+
     attr_reader :paths
 
     def initialize paths = $LOAD_PATH

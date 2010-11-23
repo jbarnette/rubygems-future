@@ -48,10 +48,7 @@ module Gem
       end
 
       def show gems, margin = nil
-        grouped = gems.by(:name)
-
-        grouped.keys.sort_by(&:downcase).each do |name|
-          versions = grouped[name].map(&:version)
+        versioned gems do |name, versions|
           puts "#{margin}#{name} (#{versions.join ', '})"
         end
       end

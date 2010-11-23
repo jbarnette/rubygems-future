@@ -16,6 +16,9 @@ module Gem
 
     # :stopdoc:
 
+    # FIX: this is ridiculously fragile. Need to be able to ask the
+    # Gem::Info or speficiation for this sort of thing.
+
     def libglob gem
       return unless gem.spec.require_paths
 

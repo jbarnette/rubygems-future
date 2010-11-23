@@ -47,8 +47,8 @@ module Gem
     attr_reader :source
 
     # Create a new instance backed by +home+, a location on the file
-    # system. Additional search +paths+ can be provided. If they
-    # exist, they're consulted during gem activation and searches.
+    # system. Additional +paths+ can be provided. If they exist,
+    # they're consulted during gem activation and searches.
 
     def initialize home, *paths
       @activated = []
@@ -133,8 +133,8 @@ module Gem
 
     # To comply with Gem::Source.
 
-    def gem name, *requirements
-      source.gem name, *requirements
+    def [] name, *requirements
+      source[name, *requirements]
     end
 
     # To comply with Gem::Source.
@@ -148,6 +148,10 @@ module Gem
     # hooks and stuff would go.
 
     def install installable
+      [bindir, cachedir, docdir, gemdir, specdir].each do |dir|
+        FileUtils.mkdir_p dir
+      end
+
       installable.install self
     end
 

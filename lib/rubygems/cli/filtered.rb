@@ -3,6 +3,10 @@ require "rubygems/requirement"
 
 module Gem
   module CLI
+
+    # Command superclass encapsulating release, prerelease, and
+    # version filters.
+
     class Filtered < Gem::CLI::Command
 
       # Any version requirements specified on the command line.
@@ -22,7 +26,7 @@ module Gem
         end
 
         opts.on "--released", "Only released gems." do
-          @releases =true
+          @releases = true
         end
 
         opts.on "--pre", "--prerelease", "Only prerelease gems." do
@@ -61,6 +65,18 @@ module Gem
 
       def releases?
         @releases
+      end
+
+      # Group the +gems+ by name, sort the keys by name, and yield
+      # each name and installed versions to +block+.
+
+      def versioned gems, &block
+        grouped = gems.by :name
+
+        grouped.keys.sort_by(&:downcase).each do |name|
+          versions = grouped[name].map(&:version)
+          yield name, versions
+        end
       end
     end
   end

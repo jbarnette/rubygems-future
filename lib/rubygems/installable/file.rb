@@ -1,4 +1,5 @@
 require "fileutils"
+require "rubygems/info"
 require "rubygems/installable"
 require "rubygems/installer"
 
@@ -11,7 +12,7 @@ module Gem
     class File
       include Gem::Installable
 
-      # Where does the <tt>.gem</tt> file live?
+      # Where does the source <tt>.gem</tt> file live?
 
       attr_reader :path
 
@@ -20,13 +21,8 @@ module Gem
       end
 
       def install repo
-
-        # FIX: refactor Gem::Installer.
-
-        FileUtils.mkdir_p ::File.join(repo.specdir)
-
-        source_index = Object.new
-        def source_index.method_missing *; end
+        si = Object.new
+        def si.method_missing *; end
 
         options = {
           :bin_dir             => ::File.join(repo.home, "bin"),
@@ -34,7 +30,7 @@ module Gem
           :force               => false,
           :ignore_dependencies => true,
           :install_dir         => repo.home,
-          :source_index        => source_index,
+          :source_index        => si,
         }
 
         Gem::Installer.new(path, options).install

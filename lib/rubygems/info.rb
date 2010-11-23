@@ -11,6 +11,8 @@ module Gem
 
   class Info
 
+    # :nodoc:
+
     MISSING = lambda do |info|
       raise Gem::Exception, "#{info} doesn't have a spec."
     end
@@ -25,7 +27,7 @@ module Gem
     attr_reader :name
 
     # This gem's platform as a <tt>String</tt>. Default is
-    # <tt>"ruby"</tt>.
+    # <tt>Gem::Platform::RUBY</tt>.
 
     attr_reader :platform
 
@@ -69,20 +71,20 @@ module Gem
     end
 
     # Create a new instance. +platform+ is optional, and defaults to
-    # +ruby+. If a block is given it'll be used to load the instance's
-    # corresponding Gem::Specification.
+    # <tt>Gem::Platform::RUBY</tt>. If a +specblock+ is given it'll be
+    # used to load the instance's corresponding Gem::Specification.
 
     def initialize name, version, platform = nil, source = nil, &specblock
       @dependencies = []
       @name         = name
-      @platform     = platform || "ruby"
+      @platform     = platform || Gem::Platform::RUBY
       @source       = source
       @specblock    = specblock || MISSING
       @version      = Gem::Version.create version
     end
 
     # A string suitable for display and file names. Includes name,
-    # version, and platform (if not ruby).
+    # version, and platform (if not <tt>Gem::Platform::RUBY</tt>).
 
     def id
       return @id if defined? @id
@@ -103,8 +105,8 @@ module Gem
 
       {
         :dependencies => deps,
-        :name         => name,
-        :platform     => platform,
+        :name         => name.to_s,
+        :platform     => platform.to_s,
         :version      => version.to_s,
       }
     end

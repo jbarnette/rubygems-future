@@ -8,16 +8,6 @@ module Gem
         true
       end
 
-      def initialize opts
-        super opts
-
-        @force = false
-
-        opts.on "--force", "-f", "Overwrite if already installed." do
-          @force = true
-        end
-      end
-
       def self.args
         %w(GEM)
       end
@@ -28,10 +18,6 @@ module Gem
 
       def self.verbs
         %w(install)
-      end
-
-      def force?
-        @force
       end
 
       def run runtime, args

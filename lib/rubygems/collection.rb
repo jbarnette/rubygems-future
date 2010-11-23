@@ -4,8 +4,9 @@ module Gem
 
   # Wraps an Enumerable collection of Gem::Info or Gem::Specification
   # (or anything that quacks like them) and provides various bits of
-  # sugar for filtering and searching. Gem::Source implementers may
-  # want to subclass to provide more efficient behavior.
+  # sugar for filtering, searching, and ordering. Gem::Source
+  # implementers may want to subclass to provide more efficient
+  # behavior.
   #
   # Each filter is available in a mutating and a non-mutating
   # version. Non-mutating versions return a new Gem::Collection which
@@ -54,9 +55,20 @@ module Gem
       0 == size
     end
 
+    # Return the first entry in the collection or +nil+ if empty.
+
     def first
       each { |e| return e }
+      nil
     end
+
+    # Get the first entry that matches +name+ and +versions+. Takes an
+    # optional options Hash like search.
+
+    def get name, *versions
+      search(/\A#{name}\Z/, *versions).first
+    end
+
 
     # Return a new collection exposing only the latest version of any entry.
 
@@ -92,24 +104,23 @@ module Gem
     def ordered development = false
       @development = development
 
-      sorted = strongly_connected_components.flatten
-      result = []
-      seen   = {}
+      ordered = []
+      seen    = {}
 
-      sorted.each do |entry|
+      strongly_connected_components.flatten.each do |entry|
         index = seen[entry.name]
 
         if index
-          if result[index].version < entry.version
-            result[index] = entry
+          if ordered[index].version < entry.version
+            ordered[index] = entry
           end
         else
-          seen[entry.name] = result.length
-          result << entry
+          seen[entry.name] = ordered.length
+          ordered << entry
         end
       end
 
-      result
+      ordered
     end
 
     # Return a new collection exposing only entries with prerelease
@@ -167,21 +178,16 @@ module Gem
       pattern    = /#{pattern}/i unless Regexp === pattern
       dependency = Gem::Dependency.new pattern, *versions
 
-      Gem::Collection.new select { |e|
+      results = select do |e|
         dependency.matches_spec?(e) &&
           options[:platform].nil? or options[:platform] == e.platform
-      }
+      end
+
+      Gem::Collection.new results
     end
 
     def size
       inject(0) { |m, _| m + 1 }
-    end
-
-    # Get the first entry that matches +name+ and +versions+. Takes an
-    # options has like search.
-
-    def get name, *versions
-      search(/\A#{name}\Z/, *versions).first
     end
 
     # Return a new collection with duplicates removed.
@@ -197,7 +203,7 @@ module Gem
 
     def unique!
       @wrapped = @wrapped.uniq
-      self
+      nil
     end
 
     alias_method :uniq!, :unique!
@@ -234,7 +240,7 @@ module Gem
 
       names = map do |e|
         a = [e.name, e.version]
-        a << e.platform unless "ruby" == e.platform
+        a << e.platform unless Gem::Platform::RUBY == e.platform
         a.join "-"
       end
 
