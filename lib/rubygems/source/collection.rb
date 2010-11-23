@@ -20,8 +20,8 @@ module Gem
         sources.map { |s| s.display }.join ", "
       end
 
-      def infos
-        Gem::Collection.new sources.map { |s| s.infos.wrapped }.flatten
+      def gems
+        Gem::Collection.new sources.map { |s| s.gems.wrapped }.flatten
       end
 
       def pull name, *requirements

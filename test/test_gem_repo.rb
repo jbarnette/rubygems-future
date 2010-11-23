@@ -119,14 +119,14 @@ class TestGemRepo < Gem::Future::Test
     end
   end
 
-  def test_infos
+  def test_gems
     repo do |r|
       gem "foo"
       gem "foo", "2.0.0"
       gem "bar"
 
-      assert_equal %w(bar foo), r.infos.latest.map { |m| m.name }.sort
-      assert_kind_of Gem::Info, r.infos.first
+      assert_equal %w(bar foo), r.gems.latest.map { |m| m.name }.sort
+      assert_kind_of Gem::Info, r.gems.first
     end
   end
 
@@ -171,11 +171,11 @@ class TestGemRepo < Gem::Future::Test
     repo do |r|
       gem "foo"
 
-      refute r.infos.empty?
+      refute r.gems.empty?
       FileUtils.rm_rf r.home
 
       r.reset
-      assert r.infos.empty?
+      assert r.gems.empty?
     end
   end
 

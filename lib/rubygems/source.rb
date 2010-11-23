@@ -45,11 +45,11 @@ module Gem
 
     # Return a collection of Gem::Info\s, a lightweight equivalent to
     # Gem::Specification. See Gem::Collection for examples of how this
-    # collection is searchable. The default implementation of this
-    # method uses +specs+ to populate.
+    # collection is searchable. Classes following the Gem::Source
+    # protocol must implement this method.
 
-    def infos
-      @infos ||= Gem::Collection.new specs.wrapped.map { |s|
+    def gems
+      @gems ||= Gem::Collection.new specs.wrapped.map { |s|
         Gem::Info.for s, self
       }
     end
@@ -65,7 +65,7 @@ module Gem
     # Make this source reload next time it's accessed.
 
     def reset
-      @infos = nil
+      @gems = nil # FIX
     end
   end
 end

@@ -131,8 +131,8 @@ module Gem
       @gemdir ||= File.join home, "gems"
     end
 
-    def infos
-      source.infos
+    def gems
+      source.gems
     end
 
     # Install +installable+ in this repo. The default impl just calls

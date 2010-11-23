@@ -30,12 +30,12 @@ module Gem
       end
 
       def run runtime, args
-        results = narrow(runtime.source.infos).search args.shift
+        results = narrow(runtime.source.gems).search args.shift
 
         if show_sources?
-          results.by(:source).each do |source, infos|
+          results.by(:source).each do |source, gems|
             puts "[#{source.display}]\n\n"
-            show infos, "    "
+            show gems, "    "
             puts
           end
         else
@@ -47,8 +47,8 @@ module Gem
         @show_sources
       end
 
-      def show infos, margin = nil
-        grouped = infos.by(:name)
+      def show gems, margin = nil
+        grouped = gems.by(:name)
 
         grouped.keys.sort_by(&:downcase).each do |name|
           versions = grouped[name].map(&:version)
