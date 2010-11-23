@@ -1,4 +1,5 @@
 require "rubygems/dependency"
+require "rubygems/package"
 require "rubygems/platform"
 require "rubygems/version"
 
@@ -11,7 +12,7 @@ module Gem
   class Info
 
     MISSING = lambda do |info|
-      raise Gem::Exception, "#{info.display} doesn't have a spec."
+      raise Gem::Exception, "#{info} doesn't have a spec."
     end
 
     # Other gems this gem depends on. An <tt>Array</tt> of
@@ -49,12 +50,22 @@ module Gem
     # +source+.
 
     def self.for spec, source = nil
-      info = new spec.name, spec.version, spec.platform, source do |info|
+      gem = new spec.name, spec.version, spec.platform, source do |g|
         spec
       end
 
-      info.dependencies.concat spec.dependencies
-      info
+      gem.dependencies.concat spec.dependencies
+      gem
+    end
+
+    # Load a Gem::Info from a <tt>.gem</tt> file.
+
+    def self.load file
+      File.open file, "rb" do |f|
+        Gem::Package.open f, "r" do |package|
+          Gem::Info.for package.metadata
+        end
+      end
     end
 
     # Create a new instance. +platform+ is optional, and defaults to

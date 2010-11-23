@@ -2,22 +2,23 @@ require "rubygems/future/test"
 require "rubygems/repo"
 
 class TestGemGlobber < Gem::Future::Test
-  def test_spec
+  def test_gem
     repo do |r|
       gem "foo" do |s|
         s.files = %w(lib/foo/bar.rb)
       end
 
       g = Gem::Globber.new r
-      spec = g.spec "foo/bar.rb"
-      assert_equal "foo", spec.name
+      gem = g.gem "foo/bar.rb"
+
+      assert_equal "foo", gem.name
     end
   end
 
-  def test_spec_not_found
+  def test_gem_not_found
     repo do |r|
       g = Gem::Globber.new r
-      assert_nil g.spec("nonexistent")
+      assert_nil g.gem("nonexistent")
     end
   end
 end

@@ -57,7 +57,7 @@ module Gem
 
     def search name, *requirements
       results = sources.map do |source|
-        source.specs.search name, *requirements
+        source.gems.search name, *requirements
       end
 
       results.inject { |m, i| m.concat i }
@@ -71,6 +71,6 @@ module Gem
       get(node.dependencies).each(&block)
     end
 
-    alias_method :specs, :tsort
+    alias_method :gems, :tsort
   end
 end

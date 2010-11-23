@@ -1,6 +1,5 @@
 require "rubygems/collection"
 require "rubygems/installable"
-require "rubygems/package"
 require "uri"
 
 module Gem
@@ -25,9 +24,9 @@ module Gem
 
       attr_reader :path
 
-      # A collection of Gem::Specification\s for this source.
+      # A collection of Gem::Info\s for this source.
 
-      attr_reader :specs
+      attr_reader :gems
 
       def self.accepts? url
         !url.scheme || "file" == url.scheme.downcase
@@ -43,18 +42,16 @@ module Gem
       end
 
       def pull name, *requirements
-        spec = specs.get name, *requirements
-        raise Gem::NotFound.new(name, version) unless spec
+        gem = gems.get name, *requirements
+        raise Gem::NotFound.new(name, version) unless gem
 
-        gem  = spec.file_name
-        file = files.detect {|f| gem == File.basename(f) }
-
+        file = files.detect {|f| "#{gem.id}.gem" == File.basename(f) }
         Gem::Installable::File.new file
       end
 
       def reset
         files = nil
-        specs = nil
+        gems  = nil
 
         if File.file? path
           unless /\.gem/i =~ path
@@ -63,7 +60,7 @@ module Gem
 
           # The source is pointed at a single .gem file.
 
-          specs = [spec_from_gem_file(path)]
+          gems  = [Gem::Info.load(path)]
           files = [path]
 
         elsif File.directory?("#{path}/specifications")
@@ -72,34 +69,26 @@ module Gem
           # gemspecs in the "specifications" directory available by
           # using .gem files in the "cache" directory.
 
-          specs = Dir["#{path}/specifications/*.gemspec"].map do |file|
-            Gem::Specification.load file
+          gems = Dir["#{path}/specifications/*.gemspec"].map do |file|
+            Gem::Info.for Gem::Specification.load(file), self
           end
 
-          files = specs.map { |spec| "#{path}/cache/#{spec.file_name}" }
+          files = gems.map { |g| "#{path}/cache/#{g.id}.gem" }
         else
 
           # The source is pointed at a bare directory of .gem files.
 
           files = Dir["#{path}/*.gem"]
-          specs = files.map { |f| spec_from_gem_file f }
+          gems  = files.map { |f| Gem::Info.load f }
         end
 
         @files = files
-        @specs = Gem::Collection.new specs
+        @gems  = Gem::Collection.new gems
 
         super
       end
 
       # :stopdoc:
-
-      def spec_from_gem_file file
-        File.open file, "rb" do |f|
-          Gem::Package.open f, "r" do |package|
-            package.metadata
-          end
-        end
-      end
 
       def to_s
         "#<#{self.class.name}: #{path}>"

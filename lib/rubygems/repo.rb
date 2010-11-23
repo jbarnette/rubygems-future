@@ -65,25 +65,25 @@ module Gem
     # directories to $LOAD_PATH. This doesn't add bin dirs.
 
     def activate name, *requirements
-      dependency = Gem::Dependency.new name, *requirements
-      return if activated? dependency
+      dep = Gem::Dependency.new name, *requirements
+      return if activated? dep
 
-      resolver = Gem::Resolver.new(self) { |r| r.needs dependency }
+      resolver = Gem::Resolver.new(self) { |r| r.needs dep }
 
-      resolver.specs.each do |spec|
-        current = activated.detect { |s| s.name == name }
+      resolver.gems.each do |gem|
+        current = activated.detect { |g| name == g.name }
 
-        if current && current != spec
-          message = "Can't activate #{dependency} , " +
-            "already activated " + "#{current.full_name}." # FIX: stack?
+        if current && current != gem
+          message = "Can't activate #{dep}, " +
+            "already activated " + "#{gem.id}." # FIX: stack?
 
           raise ::LoadError, message
         end
 
-        activated << spec
+        activated << gem
 
-        requires = spec.require_paths.map do |rp|
-          File.join gemdir, spec.full_name, rp
+        requires = gem.spec.require_paths.map do |rp|
+          File.join gemdir, gem.id, rp
         end
 
         load_path.add(*requires)
@@ -96,7 +96,7 @@ module Gem
       dependency   = name if Gem::Dependency === name
       dependency ||= Gem::Dependency.new name, *requirements
 
-      activated.any? { |s| s.satisfies_requirement? dependency }
+      activated.any? { |gem| dependency.matches_spec? gem }
     end
 
     def available? name, *requirements
@@ -131,6 +131,14 @@ module Gem
       @gemdir ||= File.join home, "gems"
     end
 
+    # To comply with Gem::Source.
+
+    def gem name, *requirements
+      source.gem name, *requirements
+    end
+
+    # To comply with Gem::Source.
+
     def gems
       source.gems
     end
@@ -160,8 +168,8 @@ module Gem
     # original +require+.
 
     def require feature
-      spec = globber.spec feature
-      activate spec.name, spec.version if spec
+      gem = globber.gem feature
+      activate gem.name, gem.version if gem
       gem_original_require feature # FIX
     end
 
@@ -170,10 +178,6 @@ module Gem
 
     def specdir
       @specdir ||= File.join home, "specifications"
-    end
-
-    def specs
-      source.specs
     end
 
     # :stopdoc:

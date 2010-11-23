@@ -73,8 +73,7 @@ module Gem
         end
 
         repo.reset
-
-        s
+        repo.gem name, version
       end
 
       # Use +spec+ and the unpacked version of the spec in the

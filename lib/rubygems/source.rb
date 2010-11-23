@@ -10,7 +10,7 @@ module Gem
   # representation of a gem when requested.
   #
   # The only methods that must be implemented on the including class
-  # are +specs+ and +pull+. You'll probably want to do more than that
+  # are +gems+ and +pull+. You'll probably want to do more than that
   # for efficiency, though.
 
   module Source
@@ -33,7 +33,7 @@ module Gem
     end
 
     def available? name, *requirements
-      !specs.search(name, *requirements).empty?
+      !gems.search(name, *requirements).empty?
     end
 
     # A pretty string representing this source. A URL or path is a
@@ -43,15 +43,19 @@ module Gem
       "unknown"
     end
 
+    # Return the first Gem::Info matching +name+ and +requirements+.
+
+    def gem name, *requirements
+      gems.search(name, *requirements).first
+    end
+
     # Return a collection of Gem::Info\s, a lightweight equivalent to
     # Gem::Specification. See Gem::Collection for examples of how this
     # collection is searchable. Classes following the Gem::Source
     # protocol must implement this method.
 
     def gems
-      @gems ||= Gem::Collection.new specs.wrapped.map { |s|
-        Gem::Info.for s, self
-      }
+      fail "#{self.class.name} needs to implement gems."
     end
 
     # Return an instance of Gem::Installable for the gem matching
@@ -59,13 +63,12 @@ module Gem
     # update themselves in a repo.
 
     def pull name, version
-      fail
+      fail "#{self.class.name} needs to implement pull."
     end
 
     # Make this source reload next time it's accessed.
 
     def reset
-      @gems = nil # FIX
     end
   end
 end

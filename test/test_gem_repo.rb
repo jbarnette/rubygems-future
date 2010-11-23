@@ -148,8 +148,8 @@ class TestGemRepo < Gem::Future::Test
 
       i = r.pull "foo", "2.0.0"
 
-      assert_equal "foo", i.spec.name
-      assert_equal v("2.0.0"), i.spec.version
+      assert_equal "foo", i.gem.name
+      assert_equal v("2.0.0"), i.gem.version
     end
   end
 
@@ -222,23 +222,23 @@ class TestGemRepo < Gem::Future::Test
     end
   end
 
-  def test_specs
+  def test_gems
     repo do |r|
       gem "foo"
       gem "foo", "2.0.0"
       gem "bar"
 
       assert_equal %w(bar-1.0.0 foo-1.0.0 foo-2.0.0),
-      r.specs.map { |s| s.full_name }.sort
+      r.gems.map { |g| g.id }.sort
     end
   end
 
-  def test_specs_secondary_path
+  def test_gems_secondary_path
     repo do |extra|
       bar = gem "bar"
 
       repo extra.home do |r|
-        assert_equal [bar], r.specs.wrapped
+        assert_equal [bar], r.gems.wrapped
       end
     end
   end

@@ -14,7 +14,7 @@ class TestGemInstallable < Gem::Future::Test
 
   def test_spec
     ex = assert_raises RuntimeError do
-      spec
+      gem
     end
 
     assert_match(/implement/, ex.message)

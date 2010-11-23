@@ -21,7 +21,7 @@ module Gem
       end
 
       def gems
-        Gem::Collection.new sources.map { |s| s.gems.wrapped }.flatten
+        Gem::Collection.new sources.map { |s|s.gems.wrapped }.flatten
       end
 
       def pull name, *requirements
@@ -33,10 +33,6 @@ module Gem
 
       def reset
         sources.each { |s| s.reset }
-      end
-
-      def specs
-        Gem::Collection.new sources.map { |s| s.specs.wrapped }.flatten
       end
 
       # :stopdoc:

@@ -1,7 +1,6 @@
 require "fileutils"
 require "rubygems/installable"
 require "rubygems/installer"
-require "rubygems/package"
 
 module Gem
   module Installable
@@ -42,12 +41,8 @@ module Gem
         repo.reset
       end
 
-      def spec
-        @spec ||= ::File.open path, "rb" do |f|
-          Gem::Package.open f, "r" do |package|
-            package.metadata
-          end
-        end
+      def gem
+        @gem ||= Gem::Info.load path
       end
     end
   end

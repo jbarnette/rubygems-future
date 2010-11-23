@@ -8,10 +8,10 @@ module Gem
 
   module Installable
 
-    # The Gem::Specification this instance knows how to install.
+    # The Gem::Info this instance knows how to install.
 
-    def spec
-      raise "#{self.class.name} needs to implement spec."
+    def gem
+      raise "#{self.class.name} needs to implement gem."
     end
 
     # Install the gem into +repo+.

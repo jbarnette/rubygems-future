@@ -4,9 +4,9 @@ module Gem
       @repo = repo
     end
 
-    def spec path
-      @repo.specs.detect do |spec|
-        libglob = libglob spec
+    def gem path
+      @repo.gems.detect do |gem|
+        libglob = libglob gem
         return unless libglob
 
         glob = File.join libglob, "#{path}#{Gem.suffix_pattern}"
@@ -16,14 +16,14 @@ module Gem
 
     # :stopdoc:
 
-    def libglob spec
-      return unless spec.require_paths
+    def libglob gem
+      return unless gem.spec.require_paths
 
       # Can't just do the path against the repo, since it might be
       # under something other than home.
-      
-      gems = File.expand_path "../../gems", spec.loaded_from
-      "#{gems}/#{spec.full_name}/{#{spec.require_paths.join ','}}"
+
+      gems = File.expand_path "../../gems", gem.spec.loaded_from
+      File.join "{#{gems}}", gem.id, "{#{gem.spec.require_paths.join ','}}"
     end
   end
 end

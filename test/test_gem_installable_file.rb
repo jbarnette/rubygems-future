@@ -7,18 +7,18 @@ class TestGemInstallableFile < Gem::Future::Test
       foo = gem "foo", "1.0.0", :cache => true
 
       repo do |target|
-        assert target.specs.empty?
+        assert target.gems.empty?
 
-        file = File.join(source.cachedir, foo.file_name)
+        file = File.join source.cachedir, "#{foo.id}.gem"
         inst = Gem::Installable::File.new file
 
         inst.install target
-        installed = target.specs.first
+        installed = target.gems.first
 
-        assert_equal inst.spec, installed
+        assert_equal inst.gem, installed
 
-        assert File.file?(installed.loaded_from)
-        assert File.directory?(File.join(target.gemdir, installed.full_name))
+        assert File.file?(installed.spec.loaded_from)
+        assert File.directory?(File.join(target.gemdir, installed.id))
       end
     end
   end
@@ -26,8 +26,8 @@ class TestGemInstallableFile < Gem::Future::Test
   def test_spec
     repo do |r|
       foo = gem "foo", "1.0.0", :cache => true
-      inst = Gem::Installable::File.new File.join(r.cachedir, foo.file_name)
-      assert_equal foo, inst.spec
+      inst = Gem::Installable::File.new File.join(r.cachedir, "#{foo.id}.gem")
+      assert_equal foo, inst.gem
     end
   end
 end
