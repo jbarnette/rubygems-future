@@ -10,6 +10,10 @@ module Gem
 
   class Info
 
+    MISSING = lambda do |info|
+      raise Gem::Exception, "#{info.display} doesn't have a spec."
+    end
+
     # Other gems this gem depends on. An <tt>Array</tt> of
     # <tt>Gem::Dependency</tt> entries.
 
@@ -30,36 +34,40 @@ module Gem
     attr_reader :source
 
     # The Gem::Specification that completely represents this
-    # gem. Normally set only for instances created via Gem::Info.for.
+    # gem. Normally only available for instances created via
+    # Gem::Info.for.
 
-    attr_reader :spec
+    def spec
+      @spec ||= @specblock.call self
+    end
 
     # This gem's version as a <tt>Gem::Version</tt>.
 
     attr_reader :version
 
-    # Create an instance from a Gem::Specification.
+    # Create an instance from a Gem::Specification and an optional
+    # +source+.
 
     def self.for spec, source = nil
-      new spec.name, spec.version, spec.platform, source, spec do |i|
-        i.dependencies.concat spec.dependencies
+      info = new spec.name, spec.version, spec.platform, source do |info|
+        spec
       end
+
+      info.dependencies.concat spec.dependencies
+      info
     end
 
     # Create a new instance. +platform+ is optional, and defaults to
-    # +ruby+. If a block is given the new instance is yielded.
+    # +ruby+. If a block is given it'll be used to load the instance's
+    # corresponding Gem::Specification.
 
-    def initialize name, version,
-      platform = nil, source = nil, spec = nil, &block
-
+    def initialize name, version, platform = nil, source = nil, &specblock
       @dependencies = []
       @name         = name
       @platform     = platform || "ruby"
       @source       = source
-      @spec         = spec
+      @specblock    = specblock || MISSING
       @version      = Gem::Version.create version
-
-      yield self if block_given?
     end
 
     # A string suitable for pretty display. Includes name, version,
@@ -94,10 +102,10 @@ module Gem
     end
 
     def marshal_load hash
-      initialize hash[:name], hash[:version], hash[:platform] do |m|
-        hash[:dependencies].each do |arr|
-          m.dependencies.push Gem::Dependency.new(*arr)
-        end
+      initialize hash[:name], hash[:version], hash[:platform]
+
+      hash[:dependencies].each do |arr|
+        dependencies.push Gem::Dependency.new(*arr)
       end
     end
 

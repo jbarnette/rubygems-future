@@ -57,12 +57,13 @@ class TestGemInfo < Gem::Future::Test
                         ["baz", "> 2.0", "< 3.0", :development]]
     }
 
-    info = Gem::Info.new "foo", "1.0.0", "jruby" do |m|
-      m.dependencies.push Gem::Dependency.new("bar", "1.0.0")
+    info = Gem::Info.new "foo", "1.0.0", "jruby"
 
-      m.dependencies.push Gem::Dependency.
+    info.dependencies.push Gem::Dependency.new("bar", "1.0.0")
+
+    info.dependencies.push Gem::Dependency.
         new("baz", "> 2.0", "< 3.0", :development)
-    end
+
 
     assert_equal expected, info.marshal_dump
   end
