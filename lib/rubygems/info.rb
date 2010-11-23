@@ -24,34 +24,39 @@ module Gem
 
     attr_reader :platform
 
-    # The Gem::Source that's responsible for this gem. May be +nil+.
+    # The Gem::Source that's responsible for this gem. Normally set
+    # only for instances created by a Gem::Source.
 
     attr_reader :source
+
+    # The Gem::Specification that completely represents this
+    # gem. Normally set only for instances created via Gem::Info.for.
+
+    attr_reader :spec
 
     # This gem's version as a <tt>Gem::Version</tt>.
 
     attr_reader :version
 
-    # Create an instance from another object that quacks like a
-    # Gem::Info. Allows +source+ to be overridden.
+    # Create an instance from a Gem::Specification.
 
-    def self.for other, source = nil
-      return unless other
-      source ||= other.source
-
-      new other.name, other.version, other.platform, source do |m|
-        m.dependencies.replace other.dependencies.dup
+    def self.for spec, source = nil
+      new spec.name, spec.version, spec.platform, source, spec do |i|
+        i.dependencies.concat spec.dependencies
       end
     end
 
     # Create a new instance. +platform+ is optional, and defaults to
     # +ruby+. If a block is given the new instance is yielded.
 
-    def initialize name, version, platform = nil, source = nil, &block
+    def initialize name, version,
+      platform = nil, source = nil, spec = nil, &block
+
       @dependencies = []
       @name         = name
       @platform     = platform || "ruby"
       @source       = source
+      @spec         = spec
       @version      = Gem::Version.create version
 
       yield self if block_given?
