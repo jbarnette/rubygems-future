@@ -88,7 +88,7 @@ module Gem
 
     def latest!
       grouped = Hash.new { |h, k| h[k] = [] }
-      @wrapped.each { |e| grouped[e.name] << e }
+      wrapped.each { |e| grouped[e.name] << e }
       @latest = grouped.values.map { |v| v.max }
 
       nil
@@ -134,7 +134,7 @@ module Gem
     # versions?
 
     def prerelease?
-      @prerelease
+      !!@prerelease
     end
 
     # Update the collection to only expose entries with prerelease
@@ -155,7 +155,7 @@ module Gem
     # Does this collection only expose entries with released versions?
 
     def released?
-      @released
+      !!@released
     end
 
     # Update the collection to only show entries with released versions.
@@ -202,7 +202,7 @@ module Gem
     # have been removed.
 
     def unique!
-      @wrapped = @wrapped.uniq
+      @wrapped = wrapped.uniq
       nil
     end
 
