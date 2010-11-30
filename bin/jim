@@ -1,4 +1,8 @@
-#!/usr/bin/env ruby --disable-gems -w -Ilib -I../rubygems/lib -rrubygems
+#!/usr/bin/env ruby
+
+$-w = true
+%w(../rubygems/lib lib).each { |p| $:.unshift p }
+require "rubygems"
 
 # A simple little command-line tool for exercising this experimental
 # stuff. Probably only works with MRI 1.9.2. Only works from the root

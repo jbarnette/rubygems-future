@@ -5,7 +5,7 @@ class Autotest
 
   def make_test_cmd files_to_test
     cmd = real_make_test_cmd files_to_test
-    cmd.sub("-rubygems", "--disable-gems -I../rubygems/lib")
+    cmd.sub("-rubygems", "-I../rubygems/lib")
   end
 end
 
