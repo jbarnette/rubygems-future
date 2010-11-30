@@ -1,8 +1,8 @@
-require "rubygems/future/test"
+require "rubygems/test"
 require "rubygems/info"
 require "rubygems/specification"
 
-class TestGemInfo < Gem::Future::Test
+class TestGemInfo < Gem::Test
   def test_dependencies
     assert_equal [], Gem::Info.new("foo", "1.0.0").dependencies
   end

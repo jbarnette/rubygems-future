@@ -1,7 +1,7 @@
-require "rubygems/future/test"
+require "rubygems/test"
 require "rubygems/installable"
 
-class TestGemInstallable < Gem::Future::Test
+class TestGemInstallable < Gem::Test
   include Gem::Installable
 
   def test_install

@@ -1,8 +1,8 @@
-require "rubygems/future/test"
+require "rubygems/test"
 require "rubygems/collection"
 require "rubygems/info"
 
-class TestGemCollection < Gem::Future::Test
+class TestGemCollection < Gem::Test
   def test_by
     a = entry "foo", "1.0.0"
     b = entry "foo", "2.0.0"

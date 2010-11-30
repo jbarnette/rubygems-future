@@ -1,7 +1,7 @@
-require "rubygems/future/test"
+require "rubygems/test"
 require "rubygems/installable/file"
 
-class TestGemInstallableFile < Gem::Future::Test
+class TestGemInstallableFile < Gem::Test
   def test_install
     repo do |source|
       foo = gem "foo", "1.0.0", :cache => true

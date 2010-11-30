@@ -1,9 +1,9 @@
-require "rubygems/future/test"
+require "rubygems/test"
 require "rubygems/repo"
 
 require "mocha"
 
-class TestGemRepo < Gem::Future::Test
+class TestGemRepo < Gem::Test
   def setup
     @old_load_path = $LOAD_PATH.dup
   end

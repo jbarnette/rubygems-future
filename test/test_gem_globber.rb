@@ -1,7 +1,7 @@
-require "rubygems/future/test"
+require "rubygems/test"
 require "rubygems/repo"
 
-class TestGemGlobber < Gem::Future::Test
+class TestGemGlobber < Gem::Test
   def test_gem
     repo do |r|
       gem "foo" do |s|

@@ -1,8 +1,8 @@
-require "rubygems/future/test"
+require "rubygems/test"
 require "rubygems/repo"
 require "rubygems/resolver"
 
-class TestGemResolver < Gem::Future::Test
+class TestGemResolver < Gem::Test
   def test_specs_simplest
     repo do |r|
       # gem "foo"
